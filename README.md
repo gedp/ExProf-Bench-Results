@@ -1,15 +1,14 @@
-# ExProf-Bench-Results
-
-# ExProf-Bench: Systematic Assessment of Executive Control in LLMs
+# ExProf-Bench: Systematic assessment of Executive Control in LLMs
 
 **Track:** Executive Functions | **Hackathon:** Measuring Progress Toward AGI (Kaggle × Google DeepMind)
 **6 tasks · 150 items · 100% deterministic Python evaluators · Kaggle SDK compatible · 33 models evaluated**
 
 ***
+# ExProf-Bench-Results
 
-## 1. Theoretical Framework
+## 1. Theoretical framework
 
-### The Gap We Measure
+### The gap we measure
 
 ExProf-Bench measures *how* a model orchestrates cognition under competing constraints, not what it knows. Autoregressive architectures excel at crystallized knowledge retrieval but fail consistently on tasks demanding fluid executive control (LeCun, 2022).
 
@@ -20,7 +19,7 @@ ExProf-Bench measures *how* a model orchestrates cognition under competing const
 - **Upadhayay et al. (ICLR 2025)**: working memory failures under dual-task load
 
 
-### Clinical Anchoring (Key Differentiator)
+### Clinical anchoring (Key differentiator)
 
 ExProf-Bench is structured around the **Unity-and-Diversity model** (Miyake et al., 2000) with normative references from validated clinical instruments:
 
@@ -34,7 +33,7 @@ ExProf-Bench is structured around the **Unity-and-Diversity model** (Miyake et a
 
 ***
 
-## 2. The Six Tasks: Dissociable EF Dimensions
+## 2. The six tasks: Dissociable EF dimensions
 
 | Task | Name | Primary EF | Clinical Basis | Failure Mode |
 | :-- | :-- | :-- | :-- | :-- |
@@ -45,7 +44,7 @@ ExProf-Bench is structured around the **Unity-and-Diversity model** (Miyake et a
 | **T5** | TrailBench | Flexibility | Trail Making B | Set collapse |
 | **T6** | MemEsp-Dual | Working memory | CANTAB-SWM | Dual-task failure |
 
-### Neuropsychological Distinctions
+### Neuropsychological distinctions
 
 **T1 vs T5**: T1 = abandon active set (inhibition). T5 = maintain both sets simultaneously (shifting). Factorially distinct (Miyake r≈0.43).
 
@@ -53,16 +52,16 @@ ExProf-Bench is structured around the **Unity-and-Diversity model** (Miyake et a
 
 ***
 
-## 3. Evaluator Design (Technical Differentiators)
+## 3. Evaluator design (technical differentiators)
 
 1. **100% deterministic** — Python vs ground truth. No LLM judges.
 2. **Rule 0: Self-correction penalized** — first committed response only (clinical standard).
 3. **Cross-load architecture** — every task embeds secondary EF demands.
 4. **Axis decomposition** — partial scores per cognitive dimension.
 
-### T2 ZooMap Example (17 trap codes)
+### T2 ZooMap example (17 trap codes)
 
-| EF Dimension | Traps | BRIEF-2A Analogue |
+| EF dimension | Traps | BRIEF-2A analogue |
 | :-- | :-- | :-- |
 | Look-ahead | `LOOKAHEAD_BOTTLENECK` | Plan/Organize |
 | Inhibition | `INHIBITORY_DEADEND` | Inhibit |
@@ -74,9 +73,34 @@ Evaluator: BFS-optimal route verification → 0.0-1.0 continuous score.
 
 ## 4. Executive Profile Index (EPI)
 
-```
-EPI = [TEI + PV + (1-TSO) + (1-IS) + TVR + (ER+(1-PD))/2] / 6
-```
+The **Executive Profile Index (EPI)** consolidates six dimension-specific failure metrics into a single interpretable score:
+
+$$\text{EPI} = \frac{\text{TEI} + \text{PV} + (1-\text{TSO}) + (1-\text{IS}) + \text{TVR} + \frac{\text{ER}+(1-\text{PD})}{2}}{6}$$
+
+### Component definitions
+
+| Component | Task | Formula | Interpretation | BRIEF-2A analogue |
+|-----------|------|---------|----------------|------------------|
+| **TEI** | T1 RuleShift | $\frac{\text{perseverative failures}}{\text{total items}}$ | Proportion collapsing to prior rule | **Inhibit** |
+| **PV** | T2 ZooMap | $\frac{\text{constraint violations}}{\text{total routes}}$ | Proportion violating explicit constraints | **Plan/Organize** |
+| **1-TSO** | T3 SixElements | $1 - (0.4\cdot\text{seq_ok} + 0.4\cdot\text{coverage_ok} + 0.2\cdot\text{accuracy})$ | Task interleaving + coverage failure | **Task monitor** |
+| **1-IS** | T4 SystSearch | $1 - \text{Systematicity Index}$ | Inverse spatial coverage efficiency | **Organization of materials** |
+| **TVR** | T5 TrailBench | $\frac{\text{alternation violations}}{\text{total steps}}$ | Consecutive repetition rate | **Shift** |
+| **(ER+(1-PD))/2** | T6 MemEsp-Dual | $\frac{\text{spatial errors} + \text{arithmetic errors}}{2}$ | Dual-task composite failure | **Working memory** |
+
+### EPI properties
+
+1. **Range**: EPI ∈ [0,1]
+   - **EPI = 0**: Perfect performance across all dimensions
+   - **EPI = 1**: Complete failure on every metric
+   - **BRIEF-2A reference**: Healthy adults EPI < 0.20 (n=1,637)
+
+2. **Equal weighting**: Each of 6 EF dimensions receives weight 1/6. No a priori assumption of relative importance.
+
+3. **Dissociable profiling**: Component inspection reveals *which* EF dimensions fail, not just aggregate impairment.
+
+### Example computation
+
 
 **EPI = 0** → perfect. **EPI = 1** → total failure.
 **BRIEF-2A reference**: Healthy adults EPI < 0.20.
@@ -84,13 +108,14 @@ EPI = [TEI + PV + (1-TSO) + (1-IS) + TVR + (ER+(1-PD))/2] / 6
 ***
 
 ## 5. Results (33 Models Evaluated)
+> **Scoring note**: Leaderboard values = **Pass Rate** (decimal). Each task contains multiple items/tests. Pass Rate = items_passed / total_items per task. Pass threshold calibrated at 70% per item (no pilot model exceeded 65% without format cues).
 
-### Global Leaderboard
+### Global leaderboard
 
 **Top performers**: Gemini-3.1-Pro (0.976), Gemma-4-31B (0.976)
 **Bottom**: Gemma-3-1B (0.253)
 
-### Discriminative Power by Task (Std. Dev.)
+### Discriminative power by task (Std. Dev.)
 
 | Task | Mean | Range | Std.Dev | Status |
 | :-- | :-- | :-- | :-- | :-- |
@@ -101,7 +126,7 @@ EPI = [TEI + PV + (1-TSO) + (1-IS) + TVR + (ER+(1-PD))/2] / 6
 | T4 Monitoring | 0.942 | 0.0→1.0 | 0.193 | Easy for frontier |
 | T2 Planning | 0.878 | 0.37→1.0 | **0.149** | Easiest |
 
-### Key Empirical Finding: Jagged Frontier
+### Key empirical finding: Jagged frontier
 
 **T5 TrailBench reveals discontinuous performance:**
 
@@ -113,25 +138,25 @@ Bottom: 0.0-0.25 (10+ models)
 
 **Parameter count ≠ EF capacity**: GPT-OSS-120B < GPT-OSS-20B on T5.
 
-### Task Heatmap
+### Task heatmap
 
 **Pattern**: Frontier saturates T2/T4. T5 reveals true executive control ceiling.
 
 ***
 
-## 6. Kaggle Submission Context
+## 6. Kaggle submission context
 
 The submitted writeup was condensed under extreme deadline pressure (~30s remaining). This repo contains:
 
 - ✅ Complete BADS/BRIEF-2A justification
 - ✅ Full EPI derivation
-- ✅ 33-model leaderboard (not 21 as in draft)
+- ✅ 33-model leaderboard
 - ✅ T5 bimodal discontinuity finding
 - ✅ GPT-120B vs 20B counterexample
 
 ***
 
-## 7. Code Structure
+## 7. Code structure
 
 ```
 ├── evaluators/           # Deterministic Python (recommended: T5+T2+T1)
