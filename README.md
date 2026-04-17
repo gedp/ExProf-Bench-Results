@@ -35,7 +35,7 @@ The central empirical finding is that frontier performance is **not smooth**. Se
 | Total items | 150 items |
 | Evaluators | 100 deterministic Python evaluators |
 | Judging | No LLM judge, no embedding similarity, no probabilistic scoring |
-| Models evaluated | 33 models [file:81] |
+| Models evaluated | 33 models |
 | Output focus | Pass rate by task, cross-task profile, global EPI |
 
 ---
@@ -110,7 +110,9 @@ Because executive functions interact in real life, ExProf-Bench does not try to 
 
 The global benchmark score is the **Executive Profile Index (EPI)**, where lower is better.
 
+
 $$EPI = \frac{TEI + PV + (1-TSO) + (1-IS) + TVR + \frac{ER + (1-PD)}{2}}{6}$$
+
 
 
 | Componente | Tarea | Interpretación |
