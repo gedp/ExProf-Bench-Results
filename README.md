@@ -2,7 +2,7 @@
 
 **Track:** Executive Functions &nbsp;|&nbsp; **Hackathon:** Measuring Progress Toward AGI (Kaggle × Google DeepMind 2026)
 
-`6 tasks` &nbsp;·&nbsp; `150 items` &nbsp;·&nbsp; `100% deterministic Python evaluators` &nbsp;·&nbsp; `No LLM judge` &nbsp;·&nbsp; `33 models evaluated`
+`6 tasks evaluated` &nbsp;·&nbsp; `5 in EPI-5 (T4 excluded)` &nbsp;·&nbsp; `150 items` &nbsp;·&nbsp; `100% deterministic Python evaluators` &nbsp;·&nbsp; `No LLM judge` &nbsp;·&nbsp; `33 models evaluated`
 
 ---
 
@@ -12,7 +12,7 @@ The central empirical result is a **jagged frontier**: larger models do not reli
 
 ---
 
-## Global leaderboard (33 models)
+## EPI-5 leaderboard (33 models)
 
 ![Model leaderboard: Mean executive control — EPI-5 dot plot](Imagenes/v3/Liderboard.png)
 
@@ -36,9 +36,9 @@ Three independent lines of evidence motivated the design:
 
 ExProf-Bench contributes three things:
 
-1. A **6-task executive-function benchmark** grounded in clinical neuropsychology rather than generic reasoning prompts.
+1. A **6-task executive-function benchmark** grounded in clinical neuropsychology rather than generic reasoning prompts (5 tasks form EPI-5; T4 excluded — see §T4 exclusion).
 2. A **fully deterministic scoring pipeline** with 100 Python evaluators and no LLM-as-judge component.
-3. A global impairment metric, the **Executive Profile Index (EPI)**, that turns dissociable failures into a single interpretable score while preserving task-level diagnostic meaning.
+3. A global impairment metric, **EPI-5**, that turns dissociable failures into a single interpretable score while preserving task-level diagnostic meaning.
 
 ---
 
@@ -47,12 +47,12 @@ ExProf-Bench contributes three things:
 | Property | Value |
 |---|---|
 | Track | Kaggle × Google DeepMind AGI Hackathon 2026, Executive Functions |
-| Tasks | 6 dissociable executive-function tasks |
+| Tasks | 6 evaluated · 5 in EPI-5 (T4 excluded — see §T4 exclusion) |
 | Total items | 150 items |
 | Evaluators | 100 deterministic Python evaluators |
 | Judging | No LLM judge · No embedding similarity · No probabilistic scoring |
 | Models evaluated | 33 models |
-| Output focus | Pass rate by task · Cross-task profile · Global EPI |
+| Output focus | Pass rate by task · Cross-task profile · EPI-5 global score |
 
 ---
 
@@ -115,23 +115,24 @@ Each task includes structured traps that activate the target executive dimension
 
 ---
 
-## Executive Profile Index (EPI)
+## Executive Profile Index (EPI-5)
 
-The global benchmark score is the **EPI**, where **lower is better**:
+The global benchmark score is the **EPI-5**, where **lower is better** (T4 excluded):
 
-$$\text{EPI} = \frac{\text{TEI} + \text{PV} + (1-\text{TSO}) + (1-\text{IS}) + \text{TVR} + \frac{\text{ER}+(1-\text{PD})}{2}}{6}$$
+$$\text{EPI-5} = \frac{\text{TEI} + \text{PV} + (1-\text{TSO}) + \text{TVR} + \frac{\text{ER}+(1-\text{PD})}{2}}{5}$$
 
 | Component | Task | Interpretation | BRIEF-2A analogue |
 |---|---|---|---|
 | **TEI** | T1 RuleShift | Task-set Error Index — perseverative failure rate | Inhibit |
 | **PV** | T2 ZooMap | Protocol Violation rate — constraint breach rate | Plan/Organize |
 | **1-TSO** | T3 SixElements | Task Sequence Optimization failure — interleaving deficit | Task monitor |
-| **1-IS** | T4 SystSearch | Inverse Systematicity Index — spatial coverage failure | Organization of materials |
 | **TVR** | T5 TrailBench | Trail Violation Rate — alternation collapse rate | Shift |
 | **(ER+(1-PD))/2** | T6 MemEsp-Dual | Dual-task composite failure | Working memory |
 
-**EPI = 0** → perfect performance across all six dimensions.  
-**EPI = 1** → complete failure on every dimension.  
+> T4 SystSearch (1-IS) was excluded from EPI-5 because it relies on Stroop-type automatic inhibition that LLMs cannot exhibit — scores converge to ~50% chance. Including it adds noise, not signal. See §T4 exclusion for the full argument.
+
+**EPI-5 = 0** → perfect performance across all five dimensions.  
+**EPI-5 = 1** → complete failure on every dimension.  
 **BRIEF-2A reference:** healthy adults EPI < 0.20 (n = 1,637). Values above 0.40 fall in the mild executive dysfunction range as an orienting reference, not a diagnostic claim.
 
 ---
@@ -184,13 +185,7 @@ Each EPI-5 task occupies a different position on the sensitivity/difficulty trad
 
 > Histogram of the T5 gap (global mean − T5 score) across all 33 models. A bimodal distribution emerges: **~11 models have no meaningful T5 gap** (they perform consistently across all tasks), while **~22 models show a positive gap**, meaning T5 fails them specifically — they look capable globally but collapse on alternation flexibility. This is direct evidence that T5 measures a specific executive capacity, not general model quality.
 
-### 7. Task coupling: pairwise inter-task structure
-
-![Pairwise scatter matrix — EPI-5 tasks, T4 excluded](Imagenes/v3/pairplot.png)
-
-> Scatter plot matrix for all five EPI-5 tasks. **Diagonal** = score distribution per task (T5 diagonal is visibly bimodal; T2 and T3 concentrate near the ceiling). **Off-diagonal cells** = scatter plot of every task pair; each dot is one model. Tightly aligned dots = correlated tasks; scattered dots = independent dimensions. **Key observations:** T2–T3 and T2–T6 show positive coupling (planning and memory co-load). T5 vs. every other task produces scattered clouds with no direction — T5 is statistically independent from the other four EPI-5 dimensions. T1 vs. T5 is nearly orthogonal (r ≈ 0.01), consistent with inhibition and shifting being factorially distinct in the Miyake et al. model.
-
-### 8. Stability: high mean alone is not enough
+### 7. Stability: high mean alone is not enough
 
 Frontier models (GLM-5, Claude-Sonnet-4.5, Qwen3-80B-Thinking) show both high EPI-5 means **and** low across-task standard deviation — stable executive capability across all five dimensions. The bottom outliers (DeepSeek-R1, Gemma-3-1B) have high variance despite low means: their failures are inconsistent, not uniformly weak, which is a distinct profile from models that fail everything uniformly.
 
@@ -239,25 +234,29 @@ A 6× larger model scores 55 points lower on the task that matters most. This di
 
 ## Full leaderboard
 
-| Model | Global | T1 | T2 | T3 | T4 | T5 | T6 |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| Gemini-3.1-Pro | **0.976** | 0.857 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
-| Gemma-4-31B | **0.976** | 0.857 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
-| Claude-Sonnet-4 | 0.965 | 0.857 | 0.933 | 1.000 | 1.000 | 1.000 | 1.000 |
-| Qwen3-80B-Thinking | 0.965 | 0.829 | 1.000 | 1.000 | 1.000 | 1.000 | 0.960 |
-| Gemma-4-26B | 0.953 | 0.857 | 1.000 | 1.000 | 1.000 | 0.900 | 0.960 |
-| Claude-Opus-4-5 | 0.940 | 0.857 | 1.000 | 1.000 | 1.000 | 0.800 | 0.960 |
-| Gemini-2.5-Pro | 0.936 | 0.886 | 1.000 | 1.000 | 1.000 | 0.800 | 0.920 |
-| GLM-5 | 0.930 | 0.857 | 0.933 | 1.000 | 1.000 | 0.900 | 0.920 |
-| GPT-OSS-20B | 0.930 | 0.857 | 0.933 | 1.000 | 1.000 | 0.950 | 0.840 |
-| … | … | … | … | … | … | … | … |
-| GPT-OSS-120B | 0.630 | 0.457 | 0.800 | 0.600 | 0.600 | 0.400 | 0.920 |
-| Gemma-3-4B | 0.642 | 0.943 | 0.667 | 0.800 | 1.000 | 0.000 | 0.440 |
-| GPT-5.4-Nano | 0.685 | 0.857 | 0.800 | 0.850 | 1.000 | 0.000 | 0.600 |
-| DeepSeek-R1 | 0.257 | 0.314 | 0.367 | 0.000 | 0.000 | 0.300 | 0.560 |
-| Gemma-3-1B | **0.253** | 0.000 | 0.400 | 0.000 | 1.000 | 0.000 | 0.120 |
+EPI-5 = mean pass rate of T1, T2, T3, T5, T6. T4 shown as reference only — excluded from EPI-5 (see §T4 exclusion).
 
-Full CSV with all 33 models: [`results/gedpve_leaderboard.csv`](results/gedpve_leaderboard.csv)
+| Model | EPI-5 | T1 | T2 | T3 | T4 † | T5 | T6 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Gemini-3.1-Pro | **0.971** | 0.857 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| Gemma-4-31B | **0.971** | 0.857 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| Claude-Sonnet-4 | 0.958 | 0.857 | 0.933 | 1.000 | 1.000 | 1.000 | 1.000 |
+| Qwen3-80B-Thinking | 0.958 | 0.829 | 1.000 | 1.000 | 1.000 | 1.000 | 0.960 |
+| Gemma-4-26B | 0.943 | 0.857 | 1.000 | 1.000 | 1.000 | 0.900 | 0.960 |
+| Claude-Opus-4-5 | 0.923 | 0.857 | 1.000 | 1.000 | 1.000 | 0.800 | 0.960 |
+| GLM-5 | 0.922 | 0.857 | 0.933 | 1.000 | 1.000 | 0.900 | 0.920 |
+| Gemini-2.5-Pro | 0.921 | 0.886 | 1.000 | 1.000 | 1.000 | 0.800 | 0.920 |
+| GPT-OSS-20B | 0.916 | 0.857 | 0.933 | 1.000 | 1.000 | 0.950 | 0.840 |
+| … | … | … | … | … | … | … | … |
+| GPT-OSS-120B | 0.635 | 0.457 | 0.800 | 0.600 | 0.600 | 0.400 | 0.920 |
+| GPT-5.4-Nano | 0.621 | 0.857 | 0.800 | 0.850 | 1.000 | 0.000 | 0.600 |
+| Gemma-3-4B | 0.570 | 0.943 | 0.667 | 0.800 | 1.000 | 0.000 | 0.440 |
+| DeepSeek-R1 | 0.308 | 0.314 | 0.367 | 0.000 | 0.000 | 0.300 | 0.560 |
+| Gemma-3-1B | **0.104** | 0.000 | 0.400 | 0.000 | 1.000 | 0.000 | 0.120 |
+
+> † T4 reference data only — not included in EPI-5. Note that several low-performing models show T4=1.000 (ceiling by chance), which inflated their previous EPI-6 scores. Excluding T4 correctly separates these models (e.g., Gemma-3-1B drops from 0.253 → 0.104, GPT-5.4-Nano from 0.685 → 0.621).
+
+Full CSV with all 33 models: [`notebooks/Resultados completos/gedpve_test-gedp_leaderboard.csv`](notebooks/Resultados%20completos/gedpve_test-gedp_leaderboard.csv)
 
 ---
 
@@ -266,8 +265,6 @@ Full CSV with all 33 models: [`results/gedpve_leaderboard.csv`](results/gedpve_l
 ```
 ExProf-Bench-Results/
 ├── README.md                       ← This document
-├── results/
-│   └── gedpve_leaderboard.csv      ← Full 33-model leaderboard
 ├── Imagenes/
 │   ├── Frontier Analysis.png       ← T5 frontier scatter (T5-specific analysis)
 │   ├── T5 count.png                ← T5 gap histogram
@@ -278,17 +275,20 @@ ExProf-Bench-Results/
 │   │   ├── 04_epi5_component_heatmap.png  ← Per-component impairment heatmap
 │   │   ├── 05_family_boxplot.png          ← Control by model family
 │   │   └── 06_radar_top_vs_bottom.png     ← Executive profile Top5 vs Bottom5
-│   └── v3/                         ← Additional EPI-5 visualizations
+│   └── v3/
 │       ├── Liderboard.png                 ← EPI-5 dot-plot leaderboard
-│       ├── heatmap.png                    ← Jagged frontier matrix (EPI-5)
-│       └── pairplot.png                   ← Pairwise inter-task scatter matrix
-├── Evaluadores/                    ← Deterministic Python evaluators
+│       └── heatmap.png                    ← Jagged frontier matrix (EPI-5)
+├── Evaluadores/                    ← Deterministic Python evaluators (T4 excluded)
 │   ├── evaluator_t1_ruleshift.py
 │   ├── evaluator_t2_zoomap.py
 │   ├── evaluator_t3_sixelements.py
 │   ├── evaluator_t5_trailbench.py
 │   └── evaluator_t6_memesp.py
-└── notebooks/                      ← Task notebooks
+└── notebooks/
+    ├── Colab-ExPro_Bench_Analisys.ipynb
+    └── Resultados completos/
+        ├── gedpve_test-gedp_leaderboard.csv   ← Full 33-model raw scores
+        └── EXPROF_WALKTHROUGH.md              ← Full methodological walkthrough
 ```
 
 **Priority for code review**: T5 (discriminator) → T2 (planning baseline) → T1 (inhibition)
