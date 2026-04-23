@@ -1,16 +1,34 @@
-# ExProf-Bench-Results
+# ExProf-Bench: Systematic Assessment of Executive Control in LLMs
 
-**ExProf-Bench** is a clinically informed benchmark for measuring executive control failures in large language models, grounded in validated executive-function constructs without claiming diagnostic or mechanistic equivalence to humans.It was developed for the **Kaggle × Google DeepMind AGI Hackathon 2026 — Track: Executive Functions** and evaluates whether a model can coordinate cognition under competing constraints, not merely retrieve knowledge.
+**Track:** Executive Functions &nbsp;|&nbsp; **Hackathon:** Measuring Progress Toward AGI (Kaggle × Google DeepMind 2026)
 
-This repository is the **complete technical appendix and public results companion** to the hackathon submission. It includes the benchmark rationale, the six-task architecture, the Executive Profile Index (EPI), consolidated findings, and the main empirical result: a **jagged frontier** in executive control, where larger models do not reliably dominate smaller ones across dissociable executive-function dimensions.
+`6 tasks` &nbsp;·&nbsp; `150 items` &nbsp;·&nbsp; `100% deterministic Python evaluators` &nbsp;·&nbsp; `No LLM judge` &nbsp;·&nbsp; `33 models evaluated`
+
+---
+
+**ExProf-Bench** is a clinically informed benchmark for measuring executive control failures in large language models, grounded in validated neuropsychological constructs without claiming diagnostic or mechanistic equivalence to humans. It asks a narrower and more important question than generic capability benchmarks: **can a model maintain, inhibit, switch, monitor, and coordinate task sets under pressure and interference?**
+
+The central empirical result is a **jagged frontier**: larger models do not reliably dominate smaller ones across dissociable executive-function dimensions. Several tasks saturate for strong models, but **T5 TrailBench** sharply re-separates the field and reveals a discontinuous executive-control ceiling invisible to size-based rankings.
+
+---
+
+## Global leaderboard (33 models)
+
+![Model leaderboard: Mean executive control — EPI-5 dot plot](Imagenes/v3/Liderboard.png)
+
+> EPI-5 pass rate (mean of T1, T2, T3, T5, T6 — T4 excluded) for all 33 models, sorted by performance. Blue = Functional (≥ 0.70), red = below threshold. **Top:** Gemini-3.1-Pro and Gemma-4-31B (≈ 0.97). **Bottom:** Gemma-3-1B (≈ 0.10), DeepSeek-R1 (≈ 0.30 — affected by `<think>` parsing artifact, see leaderboard note).
 
 ---
 
 ## Why this benchmark exists
 
-Most current LLM benchmarks reward retrieval, pattern completion, or broad problem-solving competence. ExProf-Bench instead asks a narrower and more important question: **can a model maintain, inhibit, switch, monitor, and coordinate task sets under pressure and interference?**
+Most current LLM benchmarks reward retrieval, pattern completion, or broad problem-solving competence. ExProf-Bench instead targets a specific cognitive architecture question: **can a model orchestrate cognition under competing constraints?** Autoregressive architectures excel at crystallized knowledge retrieval but fail consistently on tasks demanding fluid executive control.
 
-The benchmark is motivated by converging evidence that LLMs can show strong memory or fluent language behavior while failing in tasks that require **fluid executive control**, especially under rule shifts, dual-task load, and interference. The theoretical framing in this repository draws directly on the executive-function literature and on recent LLM studies documenting memory-control dissociations and perseverative failures.
+Three independent lines of evidence motivated the design:
+
+- **de Langis et al. (EACL 2026)** — *"Strong Memory, Weak Control"*: memory/control dissociation in 7 LLMs
+- **Song et al. (EMNLP Findings 2024)**: perseveration (A-not-B errors) in rule-shift contexts
+- **Upadhayay et al. (ICLR 2025)**: working memory failures under dual-task load
 
 ---
 
@@ -18,11 +36,9 @@ The benchmark is motivated by converging evidence that LLMs can show strong memo
 
 ExProf-Bench contributes three things:
 
-- A **6-task executive-function benchmark** grounded in clinical neuropsychology rather than generic reasoning prompts.
-- A **fully deterministic scoring pipeline** with 100 Python evaluators and no LLM-as-judge component.
-- A global impairment metric, the **Executive Profile Index (EPI)**, that turns dissociable failures into a single interpretable score while preserving task-level diagnostic meaning.
-
-The central empirical finding is that frontier performance is **not smooth**. Several tasks saturate for strong models, but **T5 TrailBench** sharply re-separates the field and reveals a discontinuous executive-control ceiling.
+1. A **6-task executive-function benchmark** grounded in clinical neuropsychology rather than generic reasoning prompts.
+2. A **fully deterministic scoring pipeline** with 100 Python evaluators and no LLM-as-judge component.
+3. A global impairment metric, the **Executive Profile Index (EPI)**, that turns dissociable failures into a single interpretable score while preserving task-level diagnostic meaning.
 
 ---
 
@@ -34,247 +50,292 @@ The central empirical finding is that frontier performance is **not smooth**. Se
 | Tasks | 6 dissociable executive-function tasks |
 | Total items | 150 items |
 | Evaluators | 100 deterministic Python evaluators |
-| Judging | No LLM judge, no embedding similarity, no probabilistic scoring |
+| Judging | No LLM judge · No embedding similarity · No probabilistic scoring |
 | Models evaluated | 33 models |
-| Output focus | Pass rate by task, cross-task profile, global EPI |
+| Output focus | Pass rate by task · Cross-task profile · Global EPI |
 
 ---
 
 ## Theoretical framework
 
-ExProf-Bench is structured around the **Unity-and-Diversity** model of executive functions proposed by **Miyake et al. (2000)**, which distinguishes related but separable executive processes such as inhibition, shifting, and updating. The benchmark uses that framework to justify six tasks that are cognitively related but empirically dissociable. 
+ExProf-Bench is structured around the **Unity-and-Diversity** model of executive functions (Miyake et al., 2000), which distinguishes related but separable executive processes: inhibition, shifting, and updating. Two clinical anchors guide construct design:
 
-Two clinical anchors guide the construct design and interpretation:
+| Instrument | n | Role | Why it differentiates |
+|---|---|---|---|
+| **BADS** (Wilson et al., 1996) | Clinical validation | T1–T4 structural basis | No other track benchmark cites BADS |
+| **BRIEF-2A** (PAR Inc., 2024) | 1,637 adults (18–99) | Performance baseline | Real normative data, not generic "humans" |
 
-- **BADS** (*Behavioural Assessment of the Dysexecutive Syndrome*) provides the structural basis for T1, T2, T3, and T4.
-- **BRIEF-2A** provides the normative adult reference used to orient interpretation of aggregate executive impairment. Its adult norm sample is **n = 1,637**.
-
-**Important methodological note:** this repository does **not** claim that LLMs are clinically equivalent to humans or to any patient population. Clinical instruments are used here as **construct anchors**, because they operationalize the same executive dimensions in which LLMs show structured failures. 
+> **Methodological note:** This repository does **not** claim that LLMs are clinically equivalent to humans or to any patient population. BADS/BRIEF-2A are used as **construct anchors** because they operationalize the same executive dimensions where LLMs show structured failures.
 
 ---
 
 ## The six tasks
 
-The benchmark covers six executive-function dimensions, each tied to a concrete neuropsychological failure mode.
-
 | Task | Name | Primary EF dimension | Clinical basis | Canonical failure mode |
 |---|---|---|---|---|
-| T1 | RuleShift / ReglaShift | Inhibitory control | BADS Rule Shift Cards | Perseveration on the previous rule |
-| T2 | ZooMap / MapaZoo | Look-ahead planning | BADS Zoo Map Test | Greedy local choice, downstream constraint failure |
-| T3 | SixElements / SixElementos | Prospective memory / strategic management | BADS Six Elements | Task monopolization, poor interleaving, coverage neglect  |
-| T4 | SystSearch / BúsquedaSist | Monitoring / systematic search | BADS Key Search | Non-systematic coverage and omissions |
-| T5 | TrailBench | Alternation flexibility / set shifting | Trail Making Test Part B adaptation | Single-set collapse, alternation failure |
-| T6 | MemEsp-Dual | Visuospatial working memory under dual-task load | CANTAB Spatial Working Memory paradigm | Spatial tracking error plus arithmetic degradation |
+| T1 | RuleShift | Rule-set suppression / cognitive set shifting ¹ | BADS Rule Shift Cards | Perseveration on the previous rule |
+| T2 | ZooMap | Look-ahead planning | BADS Zoo Map Test | Greedy local choice, downstream constraint failure |
+| T3 | SixElements | Prospective memory / strategic management | BADS Six Elements | Task monopolization, poor interleaving |
+| T4 | SystSearch | Monitoring / systematic search | BADS Key Search | Non-systematic coverage and omissions |
+| T5 | TrailBench | Alternation flexibility / set shifting | Trail Making Test Part B | Single-set collapse, alternation failure |
+| T6 | MemEsp-Dual | Visuospatial working memory under dual-task load | CANTAB Spatial WM | Spatial tracking error plus arithmetic degradation |
 
----
+### Why the tasks are dissociable
 
-## Why the tasks are dissociable
+Some tasks look similar on the surface but probe different executive mechanisms:
 
-Some tasks look similar on the surface but probe different executive mechanisms. This distinction is central to the benchmark. 
+- **T1 vs T5:** both involve managing rules or sets, but T1 measures *suppressing* an old rule, while T5 measures keeping **two active sets simultaneously** and alternating correctly. Miyake et al. treats inhibition and shifting as related but distinct factors.
+- **T5 vs T6:** both load working memory, but T5 stresses alternation and central executive coordination, whereas T6 stresses visuospatial tracking plus simultaneous arithmetic maintenance.
+- **T1 vs T4 — two types of inhibition:** both tasks involve ignoring or suppressing a competing response, but they require fundamentally different cognitive mechanisms. T4 relies on **automatic/pre-attentive inhibition** (Stroop-type): interference arises because reading is an involuntary, automatic process in humans — suppressing a pre-activated response is what creates measurable errors and latency. LLMs process all tokens through the same attention mechanism with no pre-attentive stage, so the conflict never arises and T4 scores converge to ~50% chance. T1 relies on **controlled rule suppression**: the old rule and the new rule are both explicit in the text, and what varies across models is their tendency to perseverate on the prior pattern. This is text-evaluable — stimulus, rule change, and expected response are all fully encoded in the prompt. The precise construct T1 measures is **perseveration resistance / cognitive set shifting**, not automatic inhibitory control. The label "inhibition" in the broad clinical literature covers both; ExProf-Bench distinguishes them operationally.
 
-- **T1 vs T5:** both involve managing rules or sets, but T1 measures suppressing an old rule, while T5 measures keeping **two active sets simultaneously** and alternating correctly between them. Miyake et al. treats inhibition and shifting as related but distinct factors. 
-- **T5 vs T6:** both load working memory, but T5 stresses alternation and central executive coordination, whereas T6 stresses visuospatial tracking plus simultaneous arithmetic maintenance. 
+> ¹ **T1 note:** labeled "Inhibitory control" in clinical taxonomies (BADS, BRIEF-2A) because the construct family is broad. The operational measure is perseverative failure rate (TEI): how often a model continues applying an outdated rule after an explicit rule change. This is text-evaluable. Stroop-type automatic inhibition — which requires pre-attentive processing — is architecturally absent in LLMs and is why T4 was excluded from EPI-5. See the [walkthrough §5.5](notebooks/Resultados%20completos/EXPROF_WALKTHROUGH.md#55-dos-tipos-de-inhibición-por-qué-t1-se-evalúa-y-t4-no) for the full argument.
 
-This is why a single “reasoning score” is not enough. ExProf-Bench is designed to surface **component-level breakdowns** instead of collapsing everything into generic capability.
+This is why a single "reasoning score" is not enough. ExProf-Bench surfaces **component-level breakdowns** instead of collapsing everything into generic capability.
 
 ---
 
 ## Evaluator design
 
-All evaluators follow the same core design principles. 
+All evaluators follow the same core principles:
 
 1. **100% deterministic scoring.** Every item is scored in Python against precomputed ground truth.
-2. **No LLM-as-judge.** There is no semantic similarity scoring, preference model, or heuristic grader.
-3. **Self-correction is penalized.** If a model first commits an executive error and then visibly revises itself, the item is still treated as a failure, mirroring neuropsychological scoring practice.
-4. **Axis-aware scoring.** When needed, task scores decompose into interpretable error components rather than binary success alone.
+2. **No LLM-as-judge.** No semantic similarity scoring, preference model, or heuristic grader.
+3. **Self-correction is penalized.** If a model first commits an executive error then visibly revises itself, the item is still a failure — mirroring neuropsychological scoring practice.
+4. **Axis-aware scoring.** Task scores decompose into interpretable error components, not binary success alone.
 
-This is a major design choice: ExProf-Bench measures the model’s **first committed executive response**, not its ability to repair itself after drifting.
+ExProf-Bench measures the model's **first committed executive response**, not its ability to repair itself after drifting.
 
----
+### Cognitive traps (cross-load architecture)
 
-## Cognitive traps
+Each task includes structured traps that activate the target executive dimension while introducing secondary load from other executive processes:
 
-Each task includes structured traps that activate the target executive dimension while also introducing secondary load from other executive processes. This cross-load architecture is intentional.
-
-Examples include:
-
-- **T1 RuleShift:** hidden rule changes, adversarial reaffirmation of the old rule, conflicting authority memos, and perseveration monitoring variants.
-- **T2 ZooMap:** forbidden nodes, required nodes, ordered visits, shortest-path constraints, working-memory overload, semantic interference, and perseveration loops.
-- **T5 TrailBench:** explicit labels, abstract divisions, negative amounts, dual-allocation events, and mid-sequence rule changes under critical overrides.
-
-Because executive functions interact in real life, ExProf-Bench does not try to create “pure-process” toy tasks. Instead, it blocks shortcuts by embedding realistic mixed-load demands.
+- **T1 RuleShift:** hidden rule changes, adversarial reaffirmation of the old rule, conflicting authority memos, perseveration monitoring variants.
+- **T2 ZooMap:** forbidden nodes, required nodes, ordered visits, shortest-path constraints, working-memory overload, semantic interference, perseveration loops — **17 trap codes** in total.
+- **T5 TrailBench:** explicit labels, abstract divisions, negative amounts, dual-allocation events, mid-sequence rule changes under critical overrides.
 
 ---
 
 ## Executive Profile Index (EPI)
 
-The global benchmark score is the **Executive Profile Index (EPI)**, where lower is better.
+The global benchmark score is the **EPI**, where **lower is better**:
 
+$$\text{EPI} = \frac{\text{TEI} + \text{PV} + (1-\text{TSO}) + (1-\text{IS}) + \text{TVR} + \frac{\text{ER}+(1-\text{PD})}{2}}{6}$$
 
-$$EPI = \frac{TEI + PV + (1-TSO) + (1-IS) + TVR + \frac{ER + (1-PD)}{2}}{6}$$
+| Component | Task | Interpretation | BRIEF-2A analogue |
+|---|---|---|---|
+| **TEI** | T1 RuleShift | Task-set Error Index — perseverative failure rate | Inhibit |
+| **PV** | T2 ZooMap | Protocol Violation rate — constraint breach rate | Plan/Organize |
+| **1-TSO** | T3 SixElements | Task Sequence Optimization failure — interleaving deficit | Task monitor |
+| **1-IS** | T4 SystSearch | Inverse Systematicity Index — spatial coverage failure | Organization of materials |
+| **TVR** | T5 TrailBench | Trail Violation Rate — alternation collapse rate | Shift |
+| **(ER+(1-PD))/2** | T6 MemEsp-Dual | Dual-task composite failure | Working memory |
 
-
-
-| Componente | Tarea | Interpretación |
-|---|---|---|
-| **TEI** | T1 RuleShift | Task-set Error Index |
-| **PV** | T2 ZooMap | Protocol Violation rate |
-| **1-TSO** | T3 SixElements | Task Sequence Optimization |
-| **1-IS** | T4 SystSearch | Inverse Systematicity Index |
-| **TVR** | T5 TrailBench | Trail Violation Rate |
-| **(ER + (1-PD))/2** | T6 MemEsp-Dual | Dual-task composite |
-
-
-### EPI interpretation
-
-- **EPI = 0.00** means perfect performance across all six dimensions. 
-- **EPI = 1.00** means complete failure on every dimension. 
-- **Healthy adult reference:** approximately **0.20** based on BRIEF-2A normative orientation. 
-- **Values above 0.40** fall in the mild executive dysfunction range as an orienting reference, not a diagnostic claim.
-
----
-
-## Passing criteria
-
-At the task level, ExProf-Bench uses a **0.70 pass threshold**. A model passes a task if its item-level success rate reaches or exceeds 70%. This threshold was calibrated to preserve discriminative power and avoid benchmark saturation. 
-
-The repository materials note that no pilot model exceeded 65% without explicit formatting cues, which helped motivate the final threshold. 
+**EPI = 0** → perfect performance across all six dimensions.  
+**EPI = 1** → complete failure on every dimension.  
+**BRIEF-2A reference:** healthy adults EPI < 0.20 (n = 1,637). Values above 0.40 fall in the mild executive dysfunction range as an orienting reference, not a diagnostic claim.
 
 ---
 
 ## Main empirical findings
 
-### 1. Strong models do not dominate uniformly
+### 1. The jagged frontier: task-level performance matrix
 
-The benchmark reveals a **jagged frontier**. Some frontier models saturate easier executive dimensions, but their rank order changes sharply when the task probes alternation flexibility or executive interference. 
+![Executive performance matrix (EPI-5): The jagged frontier](Imagenes/v3/heatmap.png)
 
-### 2. T5 TrailBench is the strongest discriminator
+> Each cell is a model × task pass rate (0.0–1.0) across the five EPI-5 tasks. Warm colors = near-perfect, cool colors = failure. The pattern is **not a smooth gradient**: many models that score near ceiling on T2, T3, and T6 collapse entirely on T5. This is the jagged frontier — executive control does not scale uniformly with general capability.
 
-Among the six tasks, **T5 TrailBench** shows the largest variance across models and the clearest separation between apparently similar systems. In the consolidated repository summary, T5 has: 
+### 2. T5 is the strongest discriminator — by a wide margin
 
-- **Mean pass rate:** 0.505 
-- **Range:** 0.0 to 1.0 
-- **Standard deviation:** 0.407 
-
-That makes T5 the task that most strongly exposes whether a model can maintain and alternate between active cognitive sets instead of collapsing into one. 
-
-### 3. Larger is not always better
-
-One of the headline results is a discontinuity inside the GPT-OSS family: **GPT-OSS-120B scores 0.40 on T5, while GPT-OSS-20B scores 0.95**. This directly supports the claim that parameter count alone does not predict executive-control capacity. 
-
-### 4. Frontier saturation is selective
-
-According to the consolidated results, some tasks are relatively easy for top models while others remain discriminative: 
+T5 standard deviation (0.407) is more than 2.5× the next most discriminative EPI-5 task. T2 is the easiest — frontier models saturate it. T5 alone re-separates the entire field.
 
 | Task | Mean | Range | Std. Dev. | Interpretation |
-|---|---:|---:|---:|---|
-| T2 Planning | 0.878 | 0.37–1.0 | 0.149 | Easiest overall  |
-| T4 Monitoring | 0.942 | 0.0–1.0 | 0.193 | Easy for frontier models |
-| T6 Working Memory | 0.853 | 0.12–1.0 | 0.201 | Moderate |
-| T1 Inhibition | 0.731 | 0.0–1.0 | 0.196 | Moderate |
-| T3 Prospective Memory | 0.889 | 0.0–1.0 | 0.252 | High variance |
-| T5 Flexibility | 0.505 | 0.0–1.0 | 0.407 | Strongest discriminator |
+|---|---:|---|---:|---|
+| T5 Flexibility | 0.505 | 0.0 → 1.0 | **0.407** | Strongest discriminator |
+| T3 Prospective Mem | 0.889 | 0.0 → 1.0 | 0.252 | High variance |
+| T6 Working Memory | 0.853 | 0.12 → 1.0 | 0.201 | Moderate |
+| T1 Inhibition | 0.731 | 0.0 → 1.0 | 0.196 | Moderate |
+| T2 Planning | 0.878 | 0.37 → 1.0 | **0.149** | Easiest overall |
+
+> T4 Monitoring (mean 0.942, std 0.193) excluded from EPI-5 — converges to ~50% chance under Stroop-type paradigm in LLMs. See §T4 exclusion.
+
+### 3. Task utility: sensitivity vs. baseline competence
+
+Each EPI-5 task occupies a different position on the sensitivity/difficulty tradeoff. **T5 occupies a unique quadrant**: high variance (0.407) combined with a challenging baseline (mean 0.50), making it both discriminative and non-trivial. T2 and T3 cluster near the ceiling for frontier models — useful as baselines but limited in discriminative power. T1 and T6 offer moderate separation across the full model range.
+
+### 4. Score distribution by task: the bimodal T5
+
+![Score distribution by executive task — EPI-5 tasks, T4 excluded](Imagenes/v2/01_violin_boxplot_6tasks.png)
+
+> Violin + boxplot overlay for the five EPI-5 tasks (T4 excluded — see §T4 exclusion). Each violin shows the full distribution shape across 33 models; the dark inner box is the IQR; the diamond marker is the mean, colored by tier (green = Functional, amber = Borderline, red = Executive Impairment). Background zones show the three performance tiers. **T5 is the only task with a genuinely bimodal distribution** (σ = 0.401, μ = 0.50): models either master alternation or collapse entirely. T2 and T3 cluster near the ceiling; T1 shows moderate spread.
+
+### 5. T5 model ranking: who passes the flexibility ceiling?
+
+![T5 FlexBench — 33 models ranked by flexibility score](Imagenes/v2/02_t5_ranking.png)
+
+> All 33 models sorted by T5 pass rate, colored by performance tier. The **bimodal gap** is visible as a sharp break around 0.40: 12 models score at or above 0.95 (ceiling cluster), while the remaining 21 form a dense block below 0.40. No model scores between 0.61 and 0.85 — T5 has no middle ground. This is the structural feature that makes it the benchmark's strongest discriminator.
+
+### 6. The T5 failure is specific, not general
+
+![Frontier analysis: General capability vs. T5 failure](Imagenes/Frontier%20Analysis.png)
+
+> X-axis = general capability (global mean T1–T6), Y-axis = T5-specific score. Color encodes T5 gap (global mean − T5): yellow = large specific failure, purple = no gap. **Models above the diagonal** outperform their general capability on T5. **Below the diagonal** (most of the field): T5 is a selective breakdown, not explained by general weakness. The top-right cluster (frontier models, T5 ≥ 0.7) is small and distinct.
+
+![How often is T5 a specific failure mode?](Imagenes/T5%20count.png)
+
+> Histogram of the T5 gap (global mean − T5 score) across all 33 models. A bimodal distribution emerges: **~11 models have no meaningful T5 gap** (they perform consistently across all tasks), while **~22 models show a positive gap**, meaning T5 fails them specifically — they look capable globally but collapse on alternation flexibility. This is direct evidence that T5 measures a specific executive capacity, not general model quality.
+
+### 7. Task coupling: pairwise inter-task structure
+
+![Pairwise scatter matrix — EPI-5 tasks, T4 excluded](Imagenes/v3/pairplot.png)
+
+> Scatter plot matrix for all five EPI-5 tasks. **Diagonal** = score distribution per task (T5 diagonal is visibly bimodal; T2 and T3 concentrate near the ceiling). **Off-diagonal cells** = scatter plot of every task pair; each dot is one model. Tightly aligned dots = correlated tasks; scattered dots = independent dimensions. **Key observations:** T2–T3 and T2–T6 show positive coupling (planning and memory co-load). T5 vs. every other task produces scattered clouds with no direction — T5 is statistically independent from the other four EPI-5 dimensions. T1 vs. T5 is nearly orthogonal (r ≈ 0.01), consistent with inhibition and shifting being factorially distinct in the Miyake et al. model.
+
+### 8. Stability: high mean alone is not enough
+
+Frontier models (GLM-5, Claude-Sonnet-4.5, Qwen3-80B-Thinking) show both high EPI-5 means **and** low across-task standard deviation — stable executive capability across all five dimensions. The bottom outliers (DeepSeek-R1, Gemma-3-1B) have high variance despite low means: their failures are inconsistent, not uniformly weak, which is a distinct profile from models that fail everything uniformly.
 
 ---
 
-## Current leaderboard snapshot
+## Key headline result: larger is not always better
 
-The consolidated repository summary reports the following headline leaderboard result: **Gemini-3.1-Pro** and **Gemma-4-31B** are tied at **0.976**, while **Gemma-3-1B** is the lowest reported model at **0.253**.
+One of the clearest benchmark findings is a discontinuity inside the **GPT-OSS family**:
 
-Because the benchmark is organized around dissociable executive dimensions, this global ranking should always be interpreted together with **task-level breakdowns**, especially T5. ExProf-Bench is designed to show *how* a model fails, not only *how much*.
----
-
-## Repository contents
-
-This repository is designed as the public results companion for the hackathon submission. The intended structure is:
-
-```text
-ExProf-Bench-Results/
-├── README.md
-├── results/
-│   ├── gedpve_leaderboard.csv
-│   ├── global_leaderboard.png
-│   ├── task_heatmap.png
-│   └── t5_discriminator.png
-└── notebooks/
-    ├── exprof-bench-t1-reglashift-fixed.ipynb
-    ├── exprof-bench-t2.ipynb
-    ├── exprof-bench-t5-trailbench-consolidated.ipynb
-    └── ...
+```
+GPT-OSS-20B  → T5 = 0.95   (ranks in the top tier)
+GPT-OSS-120B → T5 = 0.40   (falls below the impairment threshold)
 ```
 
-The notebooks implement the task logic and evaluators, while the results assets provide the leaderboard and visual summary of the benchmark’s discriminative structure.
----
+A 6× larger model scores 55 points lower on the task that matters most. This directly supports the claim that **parameter count does not predict executive-control capacity**, and motivates the use of task-level profiles over global rankings.
 
-## Task notes
+![Size ≠ Executive Control — GPT-OSS-20B vs GPT-OSS-120B across EPI-5 tasks](Imagenes/v2/03_gpt_oss_comparison.png)
 
-### T1 — RuleShift
-
-T1 is a rule-switching task that evaluates whether the model can abandon a previously reinforced criterion and apply a new one without perseverating. Its evaluator explicitly detects **perseverative responses**, near-perseveration, and format failures. The notebook includes multiple difficulty tiers, including adversarial variants that re-endorse the old rule immediately after announcing the new one. 
-
-### T2 — ZooMap
-
-T2 is a constrained route-planning task inspired by the BADS Zoo Map Test. Models must produce the **shortest valid route** while respecting required visits, forbidden nodes, and ordered constraints. The evaluator penalizes self-correction, invalid edges, cycles, ordering violations, forbidden visits, missing required nodes, and non-optimal routes. 
-
-### T5 — TrailBench
-
-T5 adapts the Trail Making Test Part B into a language setting. The model must alternate continuously between two active categories without collapsing into a single stream. The notebook contains 20 items spanning EASY, MEDIUM, HARD, and EXTREME conditions, including critical-override rule changes mid-sequence. Its task-level impairment metric is **TVR**, the Trail Violation Rate.
+> Pass rate comparison across all five EPI-5 tasks. GPT-OSS-20B (blue) outperforms GPT-OSS-120B (red) on every task except T6 Working Memory. The gap is most severe on **T5 Flexibility (−0.55)**, highlighted in the shaded column. Both models remain above the Functional threshold on T2, T3, and T6 — the failure is task-specific, not a global capability difference.
 
 ---
 
-## Why T5 matters so much
+## EPI-5 impairment profile by component
 
-T5 is the benchmark’s clearest proof that executive control is not reducible to general fluency or size. The task requires **set maintenance plus alternation**, and many models that look excellent elsewhere collapse when they must preserve the alternation constraint across a full sequence. 
+![EPI-5 component breakdown — 33 models × 5 dimensions](Imagenes/v2/04_epi5_component_heatmap.png)
 
-This is exactly the kind of dissociation the benchmark was built to detect. If a model scores well on planning and monitoring but fails T5, the result is not noise; it is evidence that the model’s executive profile is uneven and that “general intelligence” metrics can hide clinically interpretable control failures. 
+> Heatmap of each model's impairment score per EPI-5 component (T4 excluded). **Green = low impairment (good), Red = high impairment (bad)**. Values are the raw component scores used to compute EPI-5 (0 = optimal, 1 = total failure). Models are ordered top-to-bottom from best to worst global performance. The TVR column (T5 Flexibility) is the widest source of variance — most Borderline and Executive Impairment models have high TVR while performing well on T2 (Planning). This confirms that T5 drives most of the EPI-5 spread.
+
+---
+
+## Executive control by model family
+
+![Executive control by model family — ExProf-Bench, 33 models](Imagenes/v2/05_family_boxplot.png)
+
+> Boxplot with individual data points (jitter) for each model family, sorted by median pass rate. **Claude** and **GLM** lead on median performance; **DeepSeek** shows the highest within-family variance (driven by DeepSeek-R1's parsing artifact, see note in leaderboard). **Gemma** has the widest spread — top-tier Gemma-4 models vs. bottom-tier Gemma-3-1B. The Functional threshold (0.70) is crossed by all families except some members of DeepSeek and Gemma.
+
+---
+
+## Executive profile: Top 5 vs. Bottom 5
+
+![Executive profile radar — Top 5 vs. Bottom 5 models across EPI-5 dimensions](Imagenes/v2/06_radar_top_vs_bottom.png)
+
+> Radar chart of the average score per EPI-5 dimension for the Top 5 and Bottom 5 models by global pass rate. The **green polygon (Top 5)** nearly fills the outer boundary — these models perform at or above the Functional threshold on every dimension. The **red polygon (Bottom 5)** shows a characteristic collapse: near-zero on T5 Flexibility and T3 Prospective Memory, moderate on T2 Planning. The shape of the gap confirms that T5 and T3 are the primary axes of failure, not T1 or T2.
+
+---
+
+## Full leaderboard
+
+| Model | Global | T1 | T2 | T3 | T4 | T5 | T6 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Gemini-3.1-Pro | **0.976** | 0.857 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| Gemma-4-31B | **0.976** | 0.857 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
+| Claude-Sonnet-4 | 0.965 | 0.857 | 0.933 | 1.000 | 1.000 | 1.000 | 1.000 |
+| Qwen3-80B-Thinking | 0.965 | 0.829 | 1.000 | 1.000 | 1.000 | 1.000 | 0.960 |
+| Gemma-4-26B | 0.953 | 0.857 | 1.000 | 1.000 | 1.000 | 0.900 | 0.960 |
+| Claude-Opus-4-5 | 0.940 | 0.857 | 1.000 | 1.000 | 1.000 | 0.800 | 0.960 |
+| Gemini-2.5-Pro | 0.936 | 0.886 | 1.000 | 1.000 | 1.000 | 0.800 | 0.920 |
+| GLM-5 | 0.930 | 0.857 | 0.933 | 1.000 | 1.000 | 0.900 | 0.920 |
+| GPT-OSS-20B | 0.930 | 0.857 | 0.933 | 1.000 | 1.000 | 0.950 | 0.840 |
+| … | … | … | … | … | … | … | … |
+| GPT-OSS-120B | 0.630 | 0.457 | 0.800 | 0.600 | 0.600 | 0.400 | 0.920 |
+| Gemma-3-4B | 0.642 | 0.943 | 0.667 | 0.800 | 1.000 | 0.000 | 0.440 |
+| GPT-5.4-Nano | 0.685 | 0.857 | 0.800 | 0.850 | 1.000 | 0.000 | 0.600 |
+| DeepSeek-R1 | 0.257 | 0.314 | 0.367 | 0.000 | 0.000 | 0.300 | 0.560 |
+| Gemma-3-1B | **0.253** | 0.000 | 0.400 | 0.000 | 1.000 | 0.000 | 0.120 |
+
+Full CSV with all 33 models: [`results/gedpve_leaderboard.csv`](results/gedpve_leaderboard.csv)
+
+---
+
+## Repository structure
+
+```
+ExProf-Bench-Results/
+├── README.md                       ← This document
+├── results/
+│   └── gedpve_leaderboard.csv      ← Full 33-model leaderboard
+├── Imagenes/
+│   ├── Frontier Analysis.png       ← T5 frontier scatter (T5-specific analysis)
+│   ├── T5 count.png                ← T5 gap histogram
+│   ├── v2/                         ← EPI-5 visualizations (T4 excluded)
+│   │   ├── 01_violin_boxplot_6tasks.png   ← Score distribution by EPI-5 task
+│   │   ├── 02_t5_ranking.png              ← 33 models ranked by T5
+│   │   ├── 03_gpt_oss_comparison.png      ← Size ≠ control (GPT-OSS)
+│   │   ├── 04_epi5_component_heatmap.png  ← Per-component impairment heatmap
+│   │   ├── 05_family_boxplot.png          ← Control by model family
+│   │   └── 06_radar_top_vs_bottom.png     ← Executive profile Top5 vs Bottom5
+│   └── v3/                         ← Additional EPI-5 visualizations
+│       ├── Liderboard.png                 ← EPI-5 dot-plot leaderboard
+│       ├── heatmap.png                    ← Jagged frontier matrix (EPI-5)
+│       └── pairplot.png                   ← Pairwise inter-task scatter matrix
+├── Evaluadores/                    ← Deterministic Python evaluators
+│   ├── evaluator_t1_ruleshift.py
+│   ├── evaluator_t2_zoomap.py
+│   ├── evaluator_t3_sixelements.py
+│   ├── evaluator_t5_trailbench.py
+│   └── evaluator_t6_memesp.py
+└── notebooks/                      ← Task notebooks
+```
+
+**Priority for code review**: T5 (discriminator) → T2 (planning baseline) → T1 (inhibition)
+
+---
+
+## Passing criterion
+
+At the task level, ExProf-Bench uses a **0.70 pass threshold**: a model passes a task if its item-level success rate reaches or exceeds 70%. This threshold was calibrated to preserve discriminative power and avoid benchmark saturation. No pilot model exceeded 65% without explicit formatting cues, which helped motivate the final value.
 
 ---
 
 ## Limitations
 
-This repository explicitly acknowledges several limitations.
-
-- The benchmark is **text-based**, whereas some of its clinical inspirations are physical or visuospatial tasks.
-- It does **not impose strong time pressure**, which likely underestimates difficulty in ecologically time-sensitive tasks.
+- The benchmark is **text-based**, whereas some clinical inspirations are physical or visuospatial tasks.
+- It does **not impose strong time pressure**, which likely underestimates difficulty in ecologically time-sensitive conditions.
 - Highly capable models may eventually meta-learn parts of the task structure, especially in T5 and T6.
-- Because prompts are linguistic, measured performance can partly interact with language proficiency and instruction-following style.
+- Measured performance can partly interact with language proficiency and instruction-following style.
 - The BRIEF-2A comparison is an **orienting reference**, not a statement of clinical equivalence.
 
 ---
 
 ## Future work
 
-The writeup identifies several direct next steps: 
-
-- A **token-constrained version** to better approximate temporal pressure. 
-- A **multimodal extension** of tasks like T6 for closer correspondence with visuospatial clinical paradigms. 
-- A **human validation study** using the same items to strengthen construct calibration and refine interpretation of EPI.
+- A **token-constrained version** to better approximate temporal pressure.
+- A **multimodal extension** of T6 for closer correspondence with visuospatial clinical paradigms.
+- A **human validation study** using the same items to strengthen construct calibration and refine EPI interpretation.
 
 ---
 
-## Recommended citation
+## Citation
 
-If you use this repository, cite it as the public technical appendix for the ExProf-Bench Kaggle × Google DeepMind AGI Hackathon submission. The repository consolidates the benchmark rationale, task structure, evaluator principles, and main empirical findings. 
-
-Suggested plain-text citation:
-
-**Duarte, G. E. (2026). ExProf-Bench-Results: Systematic assessment of executive control in large language models. Public results repository for the Kaggle × Google DeepMind AGI Hackathon 2026.**
+**Duarte, G. E. (2026). *ExProf-Bench: Systematic Assessment of Executive Control in Large Language Models.* Public results repository for the Kaggle × Google DeepMind AGI Hackathon 2026.**
 
 ---
 
 ## References
 
-- Miyake, A., Friedman, N. P., Emerson, M. J., Witzki, A. H., Howerter, A., & Wager, T. D. (2000). *The Unity and Diversity of Executive Functions and Their Contributions to Complex “Frontal Lobe” Tasks.* Cognitive Psychology.
+- Miyake, A., Friedman, N. P., Emerson, M. J., Witzki, A. H., Howerter, A., & Wager, T. D. (2000). The Unity and Diversity of Executive Functions and Their Contributions to Complex "Frontal Lobe" Tasks. *Cognitive Psychology.*
 - Wilson, B. A., Alderman, N., Burgess, P. W., Emslie, H., & Evans, J. J. (1996). *BADS: Behavioural Assessment of the Dysexecutive Syndrome.*
-- PAR Inc. (2024). *BRIEF-2A Behavior Rating Inventory of Executive Function, Adult Version.* Normative adult sample n=1,637. 
-- Baddeley, A. (2000). *The episodic buffer: A new component of working memory?* Trends in Cognitive Sciences.
-- de Langis, K. et al. (2026). *Strong Memory, Weak Control: An Empirical Study of Executive Functioning in LLMs.* 
-- Song, P. et al. (2024). *In-Context Learning May Not Elicit Trustworthy Reasoning: A-Not-B Errors in Pretrained Language Models.* EMNLP Findings.
-- Upadhayay, B. et al. (2025). *Working Memory Attack on LLMs.* ICLR 2025. 
-- LeCun, Y. (2022). *A Path Toward Autonomous Machine Intelligence.* 
+- PAR Inc. (2024). *BRIEF-2A Behavior Rating Inventory of Executive Function, Adult Version.* Normative adult sample n = 1,637.
+- Baddeley, A. (2000). The episodic buffer: A new component of working memory? *Trends in Cognitive Sciences.*
+- de Langis, K. et al. (2026). Strong Memory, Weak Control: An Empirical Study of Executive Functioning in LLMs. *EACL 2026.*
+- Song, P. et al. (2024). In-Context Learning May Not Elicit Trustworthy Reasoning: A-Not-B Errors in Pretrained Language Models. *EMNLP Findings.*
+- Upadhayay, B. et al. (2025). Working Memory Attack on LLMs. *ICLR 2025.*
+- LeCun, Y. (2022). A Path Toward Autonomous Machine Intelligence.
 
 ---
 
-## Status
-
-This repository serves as the **complete public appendix** to the ExProf-Bench submission. The main added value relative to the rushed competition writeup is that it preserves the full benchmark logic: the clinical grounding, the EPI derivation, the 33-model leaderboard, the T5 discontinuity result, and the argument that executive control in LLMs forms a jagged frontier rather than a smooth scale.
+*This repository is the complete public technical appendix to the ExProf-Bench submission. It preserves the full benchmark logic: the clinical grounding, the EPI derivation, the 33-model leaderboard, and the argument that executive control in LLMs forms a jagged frontier rather than a smooth capability scale.*
