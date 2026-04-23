@@ -157,11 +157,17 @@ No prompting paradigm activates an automatic response in the biological sense. I
 
 With T4 excluded, the official index is:
 
-```
-EPI-5 = (T1_imp + T2_imp + T3_imp + T5_imp + T6_imp) / 5
-```
+$$\text{EPI-5} = \frac{\text{TEI} + \text{PV} + (1-\text{TSO}) + \text{TVR} + \frac{\text{ER}+(1-\text{PD})}{2}}{5}$$
 
-Each component is the impairment index for that task: `0 = optimal, 1 = total failure`.
+| Component | Task | Meaning |
+|:---|:---|:---|
+| **TEI** | T1 RuleShift | Task-set Error Index — perseverative failure rate |
+| **PV** | T2 ZooMap | Protocol Violation rate |
+| **1−TSO** | T3 SixElements | Task Sequence Optimization failure |
+| **TVR** | T5 TrailBench | Trail Violation Rate |
+| **(ER+(1−PD))/2** | T6 MemEsp-Dual | Dual-task composite failure |
+
+Each component is normalized to [0, 1]: `0 = optimal, 1 = total failure`. EPI-5 = 0 means no impairment across all five dimensions; EPI-5 = 1 means complete failure on every dimension.
 
 ### Impact of exclusion on discrimination
 
