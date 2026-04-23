@@ -1,289 +1,287 @@
-# ExProf-Bench — Walkthrough Metodológico
+# ExProf-Bench — Methodological Walkthrough
 
-> **ExProf-Bench v1.0** — Benchmark de funciones ejecutivas en modelos de lenguaje de gran escala (LLMs).  
-> Evalúa no la precisión general, sino la integridad de los procesos ejecutivos en situaciones de demanda cognitiva alta.
-
----
-
-## 1. Por qué un benchmark de funciones ejecutivas
-
-Los benchmarks de razonamiento existentes (MMLU, HumanEval, GSM8K) miden capacidad declarativa o habilidades específicas de dominio. No capturan si un modelo puede **mantener metas bajo interferencia**, **inhibir respuestas previas al cambiar reglas**, **planificar secuencias sin solapamiento** o **ejecutar dos tareas en paralelo sin degradación**.
-
-Estas capacidades corresponden a las **funciones ejecutivas (FE)**: procesos de control de alto nivel que en neuropsicología distinguen entre inteligencia general y eficacia cognitiva operativa. Un modelo puede tener alta precisión en preguntas factuales y colapsar ante tareas que exigen control ejecutivo.
-
-ExProf-Bench llena ese hueco.
+> **ExProf-Bench v1.0** — Executive-function benchmark for large language models (LLMs).
+> Evaluates not general accuracy, but the integrity of executive processes under high cognitive demand.
 
 ---
 
-## 2. Marco de referencia empírico: BADS y BRIEF-2A
+## 1. Why an executive-function benchmark
 
-El diseño del benchmark toma como referencia dos instrumentos de evaluación cognitiva con validación poblacional sólida. No se usan para diagnosticar modelos, sino para **calibrar las tareas y los umbrales de rendimiento** contra evidencia humana real.
+Existing reasoning benchmarks (MMLU, HumanEval, GSM8K) measure declarative ability or domain-specific skills. They do not capture whether a model can **maintain goals under interference**, **inhibit prior responses when rules change**, **plan sequences without overlap**, or **run two tasks in parallel without degradation**.
+
+These capabilities correspond to **executive functions (EF)**: high-level control processes that in neuropsychology distinguish between general intelligence and operative cognitive efficiency. A model can achieve high accuracy on factual questions and collapse completely on tasks demanding executive control.
+
+ExProf-Bench fills that gap.
+
+---
+
+## 2. Empirical reference framework: BADS and BRIEF-2A
+
+The benchmark design draws on two population-validated cognitive assessment instruments — not to diagnose models, but to **calibrate tasks and performance thresholds** against real human evidence.
 
 ### BADS — Behavioural Assessment of the Dysexecutive Syndrome (Wilson et al., 1996)
 
-Batería diseñada para medir el control ejecutivo en condiciones **ecológicas** — situaciones funcionales complejas con múltiples restricciones simultáneas, no pruebas atómicas de laboratorio. El principio que adopta ExProf-Bench: los fallos de control ejecutivo emergen cuando coexisten demanda de planificación, monitoreo y adaptación en un mismo escenario. Eso es exactamente lo que los LLMs deben enfrentar en estas tareas.
+A battery designed to measure executive control in **ecological** conditions — complex functional situations with multiple simultaneous constraints, not atomic lab tests. The principle ExProf-Bench adopts: executive-control failures emerge when planning demand, monitoring, and adaptation co-occur in the same scenario. That is exactly what LLMs face in these tasks.
 
-Las tareas T2 (Zoo Map), T3 (Six Elements) y T5 (Trail Bench) son adaptaciones directas de subtareas del BADS.
+Tasks T2 (Zoo Map), T3 (Six Elements), and T5 (Trail Bench) are direct adaptations of BADS subtasks.
 
 ### BRIEF-2A — Behavior Rating Inventory of Executive Function, Adult (Gioia et al.)
 
-Aporta los **anclajes normativos** del EPI. Los umbrales provienen de normas poblacionales humanas (n=1,637 adultos), lo que permite situar el rendimiento de un modelo en una escala calibrada externamente — en lugar de comparar modelos solo entre sí:
+Provides the **normative anchors** for EPI-5. Thresholds are derived from human population norms (n = 1,637 adults), allowing model performance to be placed on an externally calibrated scale — rather than comparing models only against each other:
 
-| Pass Rate EPI-5 | Referencia en adultos (BRIEF-2A, n=1,637) | Nivel en ExProf-Bench |
+| EPI-5 Pass Rate | Adult reference (BRIEF-2A, n = 1,637) | ExProf-Bench tier |
 |:---|:---|:---|
-| ≥ 0.70 | Rendimiento ejecutivo dentro del rango esperado | **Funcional** |
-| 0.40 – 0.70 | Rendimiento en el límite inferior del rango esperado | **Borderline** |
-| < 0.40 | Rendimiento por debajo del rango esperado en adultos | **Deterioro Ejecutivo** |
+| ≥ 0.70 | Executive performance within expected range | **Functional** |
+| 0.40 – 0.70 | Performance at the lower end of expected range | **Borderline** |
+| < 0.40 | Performance below expected range for adults | **Executive Impairment** |
 
-> **Nota metodológica:** Los umbrales BRIEF-2A son una escala de referencia externa, no un diagnóstico. "Deterioro Ejecutivo" describe el rendimiento del modelo en estas tareas — no atribuye ninguna condición al modelo. Es equivalente a decir que el output en estas dimensiones cae por debajo del rango esperado en la muestra normativa humana.
+> **Methodological note:** BRIEF-2A thresholds are an external reference scale, not a diagnosis. "Executive Impairment" describes model performance on these tasks — it does not attribute any condition to the model. It is equivalent to saying that the model's output on these dimensions falls below the expected normative range for adults.
 
 ---
 
-## 3. Las seis tareas: diseño y justificación
+## 3. The six tasks: design and rationale
 
-| Tarea | Función ejecutiva | Métrica | Referencia clínica | Estado |
+| Task | Executive function | Metric | Clinical reference | Status |
 |:---|:---|:---|:---|:---|
-| **T1 — Rule Shift** | Flexibilidad cognitiva | TEI (Task-set Error Index) | WCST, Trail Making B | ✅ Activa |
-| **T2 — Zoo Map** | Planificación espacial con restricciones | PV (Protocol Violation rate) | BADS Zoo Map Test | ✅ Activa |
-| **T3 — Six Elements** | Planificación secuencial multi-tarea | 1 − TSO (Task Sequence Optimization) | BADS Modified Six Elements | ✅ Activa |
-| **T4 — Zone Alias / GMUD** | Monitoreo / supresión de distractores | 1 − IS (Systematicity Index) | CANTAB SWM | ❌ Excluida |
-| **T5 — Trail Bench** | Inteligencia fluida / memoria de trabajo | TVR (Trail Violation Rate) | Raven's, TMT | ✅ Activa |
-| **T6 — MemEsp-Dual** | Doble tarea (dual-task) | (ER + (1−PD)) / 2 | Dual-task paradigms | ✅ Activa |
+| **T1 — Rule Shift** | Cognitive flexibility | TEI (Task-set Error Index) | WCST, Trail Making B | ✅ Active |
+| **T2 — Zoo Map** | Spatial planning under constraints | PV (Protocol Violation rate) | BADS Zoo Map Test | ✅ Active |
+| **T3 — Six Elements** | Multi-task sequential planning | 1 − TSO (Task Sequence Optimization) | BADS Modified Six Elements | ✅ Active |
+| **T4 — Zone Alias / GMUD** | Monitoring / distractor suppression | 1 − IS (Systematicity Index) | CANTAB SWM | ❌ Excluded |
+| **T5 — Trail Bench** | Fluid intelligence / working memory | TVR (Trail Violation Rate) | Raven's, TMT | ✅ Active |
+| **T6 — MemEsp-Dual** | Dual-task maintenance | (ER + (1−PD)) / 2 | Dual-task paradigms | ✅ Active |
 
-### Lógica de cada tarea
+### Task logic
 
-**T1 (Rule Shift / Flexibilidad):** El modelo debe aprender una regla de clasificación y luego, sin aviso explícito, aplicar la regla siguiente. Los errores de perseveración — continuar usando la regla anterior — son la señal de deterioro. Métrica: tasa de errores perseverativos (TEI).
+**T1 (Rule Shift / Flexibility):** The model learns a classification rule; then, without explicit warning, the rule changes and it must apply the new one. Perseveration errors — continuing to use the prior rule — are the impairment signal. Metric: perseverative error rate (TEI).
 
-**T2 (Zoo Map / Planificación):** El modelo debe trazar una ruta que cumpla múltiples restricciones simultáneas. La ruta más corta suele violar alguna restricción. Se mide si el modelo planifica globalmente antes de actuar o sigue un greedy path. Métrica: tasa de violaciones de protocolo (PV).
+**T2 (Zoo Map / Planning):** The model must trace a route satisfying multiple simultaneous constraints. The shortest path typically violates at least one constraint. The task measures whether the model plans globally before acting or follows a greedy path. Metric: protocol violation rate (PV).
 
-**T3 (Six Elements / Secuenciación):** El modelo debe distribuir su tiempo entre 6 subtareas con la regla de no trabajar en dos subtareas del mismo tipo consecutivamente. La optimización de la secuencia es la señal. Métrica: proporción de subtareas únicas completadas respetando la secuencia (TSO).
+**T3 (Six Elements / Sequencing):** The model distributes effort across 6 subtasks with the constraint that no two subtasks of the same type may be worked consecutively. Sequence optimization is the signal. Metric: proportion of unique subtasks completed in a valid sequence (TSO).
 
-**T5 (Trail Bench / Fluencia ejecutiva):** Adaptación del Trail Making Test. Alterna entre secuencias numéricas y de otro tipo en condiciones de carga creciente. Métrica: tasa de violaciones de trail (TVR). Es la tarea más discriminativa del benchmark.
+**T5 (Trail Bench / Executive Fluency):** An adaptation of the Trail Making Test. The model alternates between two sequences under increasing load. Metric: trail violation rate (TVR). The most discriminative task in the benchmark.
 
-**T6 (MemEsp-Dual / Doble tarea):** El modelo ejecuta dos tareas en paralelo. Se mide tanto la tasa de errores (ER) como la pérdida de precisión en la tarea secundaria (PD). Una tarea sola puede ser trivial; la demanda simultánea revela la capacidad de reparto atencional.
-
----
-
-## 4. El índice EPI: construcción y fórmula
-
-El **Executive Performance Impairment (EPI)** agrega las métricas de cada tarea en un índice único de deterioro:
-
-- **0** = sin deterioro ejecutivo detectable en las tareas evaluadas
-- **1** = fallo total en todas las dimensiones
-
-La fórmula es el promedio de los índices de deterioro por tarea. Cada componente ya está normalizado en el rango [0, 1] con la convención: **mayor valor = mayor deterioro**.
+**T6 (MemEsp-Dual / Dual-task):** The model runs two tasks in parallel. Both error rate (ER) and precision loss on the secondary task (PD) are measured. Each task alone may be trivial; simultaneous demand reveals attentional allocation capacity.
 
 ---
 
-## 5. El caso T4: por qué fue excluida
+## 4. The EPI index: construction and formula
 
-### 5.1 Diseño original — Zone Alias Trap
+The **Executive Performance Impairment (EPI)** aggregates per-task metrics into a single impairment index:
 
-T4 fue diseñada para medir supresión de distractores mediante un paradigma de búsqueda sistemática con trampas semánticas. El modelo debía recorrer zonas en orden boustrophedon mientras ignoraba alias de zona intencionalmente confusos.
+- **0** = no detectable executive impairment across evaluated tasks
+- **1** = total failure on every dimension
 
-### 5.2 Resultado empírico en 33 modelos
+The formula is the average of the per-task impairment indices. Each component is already normalized to [0, 1] with the convention: **higher value = greater impairment**.
 
-| Estadístico | T4 | Referencia (T5) |
+---
+
+## 5. The T4 case: why it was excluded
+
+### 5.1 Original design — Zone Alias Trap
+
+T4 was designed to measure distractor suppression via a systematic search paradigm with semantic traps. The model had to traverse zones in boustrophedon order while ignoring intentionally confusing zone aliases.
+
+### 5.2 Empirical result across 33 models
+
+| Statistic | T4 | Reference (T5) |
 |:---|:---|:---|
-| Media global | 49.1% | variable por modelo |
-| Desviación estándar | **9.6%** | ~34% |
-| Rango observado | 0 – 58.8% | amplio |
+| Global mean | 49.1% | varies by model |
+| Standard deviation | **9.6%** | ~34% |
+| Observed range | 0 – 58.8% | wide |
 
-Todos los modelos, desde 1B hasta 480B parámetros, convergieron en el rango 50–58%. La tarea era estadísticamente indistinguible del azar. No discriminaba.
+Every model — from 1B to 480B parameters — converged to the 50–58% range. The task was statistically indistinguishable from chance. It did not discriminate.
 
-### 5.3 Intento de rediseño — GMUD (Goal Maintenance Under Distraction)
+### 5.3 Redesign attempt — GMUD (Goal Maintenance Under Distraction)
 
-Ante el fallo de T4 original, se diseñó una versión alternativa basada en el paradigma **Silent Stroop**: el modelo debía ejecutar un escaneo boustrophedon en grids de 3×3 a 6×6, mientras el contexto incluía telemetría de emergencia diseñada para capturar su atención e interrumpir el objetivo principal. El conflicto era implícito — no había instrucción explícita de ignorar la emergencia.
+Following the failure of the original T4, an alternative version was designed based on the **Silent Stroop** paradigm: the model had to perform a boustrophedon scan on 3×3 to 6×6 grids while the context included emergency telemetry designed to capture its attention and interrupt the primary goal. The conflict was implicit — there was no explicit instruction to ignore the emergency.
 
-**Resultado del piloto (Gemini 3 Flash Preview, 20 ítems):** 20/20 (100%), score=1.000 en todos los ítems, I²=0.000. Cero interferencia detectable en ningún nivel de dificultad.
+**Pilot result (Gemini 3 Flash Preview, 20 items):** 20/20 (100%), score = 1.000 on every item, I² = 0.000. Zero detectable interference at any difficulty level.
 
-### 5.4 Por qué el rediseño también falló: el argumento arquitectónico
+### 5.4 Why the redesign also failed: the architectural argument
 
-La tarea de Stroop funciona en humanos porque la **lectura es automática**: el cerebro procesa la palabra "ROJO" de forma involuntaria aunque la instrucción sea reportar el color. Inhibir esa respuesta automática requiere esfuerzo cognitivo activo, y ese esfuerzo produce errores y latencias medibles.
+The Stroop task works in humans because **reading is automatic**: the brain processes the word "RED" involuntarily even when the instruction is to report the ink color. Inhibiting that pre-activated response requires active cognitive effort, and that effort produces measurable errors and latencies.
 
-Esta automaticidad está bien documentada. **MacLeod (1991)**, en su revisión de medio siglo de investigación sobre el efecto Stroop (*Psychological Bulletin*, 109(2), 163–203), establece que la interferencia ocurre precisamente porque la lectura es un proceso **pre-atencional, paralelo e indetenible** una vez iniciado. **Shiffrin & Schneider (1977)** (*Psychological Review*, 84(2), 127–190) definen los procesos automáticos como aquellos que se ejecutan sin intención, sin consumir recursos atencionales y que no pueden ser suprimidos voluntariamente — es esa inaparabilidad lo que crea el conflicto.
+This automaticity is well documented. **MacLeod (1991)**, in his half-century review of Stroop research (*Psychological Bulletin*, 109(2), 163–203), establishes that interference occurs precisely because reading is a **pre-attentive, parallel, and unstoppable** process once triggered. **Shiffrin & Schneider (1977)** (*Psychological Review*, 84(2), 127–190) define automatic processes as those that execute without intention, without consuming attentional resources, and that cannot be voluntarily suppressed — it is that unstoppability that creates the conflict.
 
-Los LLMs **no tienen ese mecanismo**. La razón no es que sean más capaces de inhibir, sino que el conflicto estructural nunca existe:
+LLMs **do not have that mechanism**. The reason is not that they are better at inhibiting — it is that the structural conflict never exists:
 
-1. **El forward pass es atómico:** todo el input — instrucción, contexto, distractores — es procesado en paralelo por el mecanismo de autoatención (Vaswani et al., 2017, *NeurIPS*). No hay una "etapa automática previa" que se active antes de que llegue la instrucción.
-2. **No hay respuesta ya activada que suprimir:** en el Stroop humano, el sistema ya está leyendo "ROJO" cuando intenta responder "azul". En un LLM, el distractor es simplemente más tokens en el contexto — procesados uniformemente, sin activación preferencial.
-3. **La supresión ocurre en el espacio latente, sin traza conductual:** si una representación interna compite con otra, ese conflicto se resuelve dentro del modelo sin producir el patrón observable de errores e interferencia que define el control inhibitorio medible.
-4. **El entrenamiento elimina el conflicto de raíz:** los LLMs fueron optimizados para seguir instrucciones escritas. No existe una respuesta automática que compita con la instrucción, porque seguir instrucciones escritas *es* el comportamiento entrenado.
+1. **The forward pass is atomic:** the entire input — instruction, context, distractors — is processed in parallel by the self-attention mechanism (Vaswani et al., 2017, *NeurIPS*). There is no "prior automatic stage" that fires before the instruction arrives.
+2. **There is no already-activated response to suppress:** in human Stroop, the system is already reading "RED" while trying to respond "blue." In an LLM, the distractor is simply more tokens in the context — processed uniformly, with no preferential activation.
+3. **Suppression occurs in latent space, with no behavioral trace:** if one internal representation competes with another, that conflict resolves inside the model without producing the observable error-and-interference pattern that defines measurable inhibitory control.
+4. **Training eliminates the conflict at the root:** LLMs were optimized to follow written instructions. There is no automatic response competing with the instruction, because following written instructions *is* the trained behavior.
 
-La conclusión no es que los LLMs "resisten bien" la distracción. Es que **la arquitectura de inferencia paralela elimina la precondición del control inhibitorio**. El efecto no falla porque el modelo sea muy bueno inhibiendo — falla porque nunca hay nada que inhibir.
+The conclusion is not that LLMs "resist distraction well." It is that **the parallel inference architecture eliminates the precondition for inhibitory control**. The effect fails not because the model is very good at inhibiting — it fails because there is never anything to inhibit.
 
-Evidencia empírica convergente con este argumento en LLMs: **Cognitive Control in Vision-Language Models** (arXiv:2505.18969, 2025) documenta que los fallos de control ejecutivo observables en LLMs son selectivos y estructurales, no una degradación general. **Deficient Executive Control in Transformer Attention** (bioRxiv, 2025) propone que ciertos fallos de control emergen de la arquitectura de atención, no de la capacidad del modelo. Ambos coinciden en que los fallos de control ejecutivo en LLMs son **específicos de constructo** — algunos son medibles y reales, otros son arquitecturalmente imposibles de replicar.
+Converging empirical evidence: **Cognitive Control in Vision-Language Models** (arXiv:2505.18969, 2025) documents that observable executive-control failures in LLMs are selective and structural, not a general degradation. **Deficient Executive Control in Transformer Attention** (bioRxiv, 2025) proposes that certain control failures emerge from the attention architecture, not model capacity. Both agree that executive-control failures in LLMs are **construct-specific** — some are measurable and real; others are architecturally impossible to replicate.
 
-### 5.5 Por qué T1 sí es evaluable mediante texto
+### 5.5 Why T1 is evaluable via text
 
-T4 fue excluida porque la inhibición automática que exige no puede existir en un LLM — ese argumento está desarrollado en la sección anterior. Una pregunta natural que surge es: **¿T1 tampoco debería excluirse? También lleva la etiqueta "Inhibición".**
+T4 was excluded because the automatic inhibition it demands cannot exist in an LLM — that argument is developed in the previous section. A natural follow-up question is: **should T1 also be excluded? It also carries the "Inhibition" label.**
 
-La respuesta es no, porque T1 mide un constructo operacionalmente distinto.
+The answer is no, because T1 measures an operationally distinct construct.
 
-**T1 no mide inhibición automática.** Mide **resistencia a la perseveración**: el modelo aprende y aplica una regla de clasificación; luego el contexto cambia y debe dejar de aplicar la regla anterior y adoptar la nueva. El fallo observable es continuar usando la regla obsoleta. Este constructo es evaluable mediante texto porque:
+**T1 does not measure automatic inhibition.** It measures **perseveration resistance**: the model learns and applies a classification rule; the context then changes and the model must stop applying the old rule and adopt the new one. The observable failure is continuing to use the obsolete rule. This construct is evaluable via text because:
 
-1. La regla anterior y la nueva regla están ambas representadas de forma **explícita** en el input.
-2. El "conflicto" es entre la tendencia estadística del modelo a continuar con el patrón previo y la instrucción explícita de cambiar — no entre un proceso automático ya activado y uno consciente.
-3. Tanto el estímulo como la respuesta correcta están completamente codificados en texto. No se requiere ningún procesamiento fuera de la ventana de contexto.
-4. Los errores son observables y cuantificables: el modelo produce la respuesta de la regla anterior cuando debería producir la de la nueva.
+1. Both the old rule and the new rule are represented **explicitly** in the input.
+2. The "conflict" is between the model's statistical tendency to continue the prior pattern and the explicit instruction to change — not between an already-activated automatic process and a conscious one.
+3. Both the stimulus and the correct response are fully encoded in text. No processing outside the context window is required.
+4. Errors are observable and quantifiable: the model produces the response of the old rule when it should produce the response of the new one.
 
-El constructo preciso es **flexibilidad de set cognitivo** (cognitive set shifting): desvincularse de un patrón activo y adoptar uno nuevo. La métrica TEI (Task-set Error Index) mide exactamente eso: la tasa de errores perseverativos.
+The precise construct is **cognitive set shifting**: disengaging from an active pattern and adopting a new one. The TEI metric (Task-set Error Index) measures exactly that: the perseverative error rate.
 
-**Nota terminológica:** T1 hereda la etiqueta "Inhibición" de su análogo clínico (BADS Rule Shift Cards), que en la literatura se agrupa bajo el constructo inhibitorio amplio. Esa etiqueta es correcta en el sentido de que perseverar = no inhibir la regla vieja — pero el mecanismo no requiere procesamiento pre-atentivo, que es la precondición que hace inviable T4. Cualquier benchmark que use "inhibitory control" sin distinguir entre los dos mecanismos está solapando constructos que ExProf-Bench separa explícitamente.
+**Terminological note:** T1 inherits the "Inhibition" label from its clinical analogue (BADS Rule Shift Cards), which the literature groups under the broad inhibitory construct. That label is correct in the sense that perseverating = failing to inhibit the old rule — but the mechanism does not require pre-attentive processing, which is the precondition that makes T4 non-viable. Any benchmark that uses "inhibitory control" without distinguishing between the two mechanisms is conflating constructs that ExProf-Bench separates operationally.
 
-- **T2** captura la tendencia al **path greedy**: el modelo sigue la ruta más corta cuando esa ruta viola restricciones — resistencia al prior estadístico, también evaluable mediante texto por la misma razón que T1.
+- **T2** captures the tendency toward **greedy path selection**: the model follows the shortest route even when that route violates constraints — resistance to the statistical prior, also evaluable via text for the same reason as T1.
 
-En ambos casos, lo que genera varianza entre modelos es la resistencia al prior estadístico dominante: un constructo medible y real en LLMs, operacionalmente distinto de la inhibición automática cuya ausencia justificó excluir T4.
+In both cases, what generates variance across models is **resistance to the dominant statistical prior**: a measurable, real construct in LLMs, operationally distinct from the automatic inhibition whose architectural absence justified excluding T4.
 
-### 5.6 ¿Se puede medir control inhibitorio con prompting?
+### 5.6 Can inhibitory control be measured via prompting?
 
-Una pregunta legítima es si existe algún diseño de prompting que mida inhibición en LLMs de forma válida. La respuesta corta es no — al menos no inhibición en sentido estricto.
+A legitimate question is whether any prompting design can validly measure inhibition in LLMs. The short answer is no — at least not inhibition in the strict sense.
 
-El paradigma que más se acerca es la **inversión semántica acumulativa**: dar reglas que invierten el significado de palabras y hacer preguntas que activan priors semánticos fuertes, apilando capas de inversión hasta que el modelo colapsa. Esto crea varianza real entre modelos. Sin embargo, lo que mide no es inhibición — mide **memoria de trabajo bajo carga de reglas**. Cuando el modelo falla al tercer o cuarto nivel de inversión, falla porque perdió el rastro de las reglas activas, no porque un impulso automático lo venció. Eso es exactamente lo que mide T5 del benchmark.
+The paradigm that comes closest is **cumulative semantic inversion**: giving rules that invert word meanings and asking questions that activate strong semantic priors, stacking inversion layers until the model collapses. This creates real variance across models. However, what it measures is not inhibition — it measures **working memory under rule load**. When the model fails at the third or fourth inversion level, it fails because it lost track of the active rules, not because an automatic impulse overcame it. That is precisely what T5 of the benchmark measures.
 
-El control inhibitorio requiere tres condiciones que el prompting no puede satisfacer simultáneamente:
+Inhibitory control requires three conditions that prompting cannot satisfy simultaneously:
 
-1. Una respuesta automática ya activada antes de que el sistema de control intervenga
-2. Un mecanismo que la frene activamente durante la ejecución
-3. Evidencia conductual observable de ese conflicto (errores o latencia diferencial)
+1. An automatic response already activated before the control system intervenes
+2. A mechanism that actively halts it during execution
+3. Observable behavioral evidence of that conflict (errors or differential latency)
 
-Ningún paradigma de prompting activa una respuesta automática en el sentido biológico. Activa una respuesta aprendida estadísticamente y pide sustituirla — eso es seguimiento de reglas, no inhibición. El output incorrecto podría deberse a fallo inhibitorio, fallo de memoria de trabajo o fallo de comprensión. Son indistinguibles desde fuera.
+No prompting paradigm activates an automatic response in the biological sense. It activates a statistically learned response and asks for a substitution — that is rule-following, not inhibition. An incorrect output could stem from inhibitory failure, working-memory failure, or comprehension failure. They are indistinguishable from the outside.
 
-**Conclusión:** No existe un paradigma de prompting que mida control inhibitorio en LLMs de forma limpia. Lo que cualquier benchmark que afirme medirlo realmente mide es resistencia al prior estadístico, seguimiento de reglas bajo carga, o memoria de trabajo — constructos válidos e interesantes, pero no inhibición en sentido estricto. Llamarlos "inhibitory control" es reetiquetado del constructo.
+**Conclusion:** No prompting paradigm cleanly measures inhibitory control in LLMs. What any benchmark claiming to measure it actually measures is resistance to statistical priors, rule-following under load, or working memory — valid and interesting constructs, but not inhibition in the strict sense. Labeling them "inhibitory control" is construct relabeling.
 
 ---
 
-## 6. Fórmula oficial: EPI-5
+## 6. Official formula: EPI-5
 
-Con T4 excluida, el índice oficial es:
+With T4 excluded, the official index is:
 
 ```
 EPI-5 = (T1_imp + T2_imp + T3_imp + T5_imp + T6_imp) / 5
 ```
 
-Cada componente es el índice de deterioro de esa tarea: `0 = óptimo, 1 = fallo total`.
+Each component is the impairment index for that task: `0 = optimal, 1 = total failure`.
 
-### Impacto de la exclusión en la discriminación
+### Impact of exclusion on discrimination
 
-| Métrica | EPI-6 (con T4) | EPI-5 (sin T4) |
+| Metric | EPI-6 (with T4) | EPI-5 (without T4) |
 |:---|:---|:---|
-| Media global | 0.1849 | 0.1966 |
-| Desviación estándar | 0.1496 | **0.1602** |
-| Rango | 0.6765 | 0.6737 |
-| Coeficiente de variación | 0.8089 | **0.8152** |
+| Global mean | 0.1849 | 0.1966 |
+| Standard deviation | 0.1496 | **0.1602** |
+| Range | 0.6765 | 0.6737 |
+| Coefficient of variation | 0.8089 | **0.8152** |
 
-La desviación estándar aumentó 7%. La mejora no es dramática porque T1–T3, T5 y T6 siempre discriminaron correctamente — el problema era específicamente T4, que añadía ruido aleatorio. EPI-5 es más limpio, no radicalmente diferente en dispersión.
+Standard deviation increased 7%. The improvement is not dramatic because T1–T3, T5, and T6 always discriminated correctly — the problem was specifically T4, which added random noise. EPI-5 is cleaner, not radically different in dispersion.
 
-Un efecto real sí se observa en la **distribución**: 4 modelos que aparecían en **Funcional** con EPI-6 pasaron a **Borderline** con EPI-5. Esto refleja que T4 — al converger en ~50% por azar — mejoraba artificialmente el pass rate de modelos con bajo rendimiento en otras tareas.
+A real effect is visible in the **distribution**: 4 models that appeared in **Functional** under EPI-6 moved to **Borderline** under EPI-5. This reflects that T4 — converging at ~50% by chance — was artificially inflating the pass rate of models with low performance on other tasks.
 
 ---
 
-## 7. Leaderboard completo — 33 modelos
+## 7. Full leaderboard — 33 models
 
-**Clasificación por pass rate EPI-5 (mean T1–T3,T5,T6):**
-- 🟢 **Funcional** — pass rate ≥ 0.70 (28 modelos)
-- 🟡 **Borderline** — pass rate 0.40–0.70 (3 modelos)
-- 🔴 **Deterioro Ejecutivo** — pass rate < 0.40 (2 modelos)
+**Classification by EPI-5 pass rate (mean T1–T3, T5, T6):**
+- 🟢 **Functional** — pass rate ≥ 0.70 (28 models)
+- 🟡 **Borderline** — pass rate 0.40–0.70 (3 models)
+- 🔴 **Executive Impairment** — pass rate < 0.40 (2 models)
 
-| # | Modelo | EPI-5 | EPI-6 ref | T1 | T2 | T3 | T5 | T6 | Nivel |
+| # | Model | EPI-5 | EPI-6 ref | T1 | T2 | T3 | T5 | T6 | Tier |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---|
-| 1 | Gemini 3.1 Pro Preview | **0.034** | 0.041 | 85.7 | 100.0 | 100.0 | 100.0 | 97.5 | 🟢 Funcional |
-| 2 | Gemma 4 31B | **0.034** | 0.041 | 85.7 | 100.0 | 100.0 | 100.0 | 97.3 | 🟢 Funcional |
-| 3 | Qwen 3 Next 80B Thinking | **0.036** | 0.049 | 85.7 | 100.0 | 100.0 | 100.0 | 96.1 | 🟢 Funcional |
-| 4 | Claude Sonnet 4 | 0.047 | 0.058 | 85.7 | 92.3 | 100.0 | 100.0 | 98.4 | 🟢 Funcional |
-| 5 | Gemma 4 26B A4B | 0.056 | 0.059 | 85.7 | 100.0 | 100.0 | 90.0 | 96.1 | 🟢 Funcional |
-| 6 | gpt-oss-20b | 0.057 | 0.055 | 85.7 | 93.3 | 98.0 | 97.5 | 96.8 | 🟢 Funcional |
-| 7 | Gemini 2.5 Pro | 0.066 | 0.065 | 74.3 | 96.7 | 100.0 | 100.0 | 96.0 | 🟢 Funcional |
-| 8 | Claude Sonnet 4.6 | 0.066 | 0.081 | 85.7 | 85.7 | 100.0 | 100.0 | 95.6 | 🟢 Funcional |
-| 9 | GLM-5 | 0.070 | 0.072 | 68.6 | 100.0 | 100.0 | 100.0 | 96.5 | 🟢 Funcional |
-| 10 | Claude Opus 4.5 | 0.079 | 0.081 | 68.6 | 93.3 | 100.0 | 100.0 | 98.5 | 🟢 Funcional |
-| 11 | Claude Sonnet 4.5 | 0.079 | 0.082 | 68.6 | 93.3 | 100.0 | 100.0 | 98.5 | 🟢 Funcional |
-| 12 | Claude Opus 4.6 | 0.081 | 0.114 | 68.6 | 96.7 | 100.0 | 100.0 | 94.1 | 🟢 Funcional |
-| 13 | GPT-5.4 | 0.092 | 0.087 | 88.6 | 86.7 | 90.0 | 92.5 | 96.4 | 🟢 Funcional |
-| 14 | Gemini 2.5 Flash | 0.107 | 0.107 | 85.7 | 96.7 | 100.0 | 67.5 | 96.7 | 🟢 Funcional |
-| 15 | Claude Opus 4.1 | 0.146 | 0.138 | 88.6 | 93.3 | 90.0 | 57.5 | 97.7 | 🟢 Funcional |
-| 16 | Gemini 3.1 Flash-Lite Preview | 0.193 | 0.163 | 85.7 | 89.0 | 98.0 | 32.5 | 98.1 | 🟢 Funcional |
-| 17 | gpt-5.4-mini-2026-03-17 | 0.200 | 0.182 | 100.0 | 81.3 | 100.0 | 30.0 | 88.8 | 🟢 Funcional |
-| 18 | qwen3-235b-a22b-instruct-2507 | 0.200 | 0.188 | 85.7 | 91.3 | 100.0 | 32.5 | 90.3 | 🟢 Funcional |
-| 19 | gemini-2.0-flash | 0.211 | 0.184 | 85.7 | 92.3 | 88.0 | 35.0 | 93.6 | 🟢 Funcional |
-| 20 | Gemini 3 Flash Preview | 0.213 | 0.187 | 71.4 | 100.0 | 100.0 | 25.0 | 97.3 | 🟢 Funcional |
-| 21 | Deepseek V3.1 | 0.225 | 0.199 | 77.1 | 90.7 | 100.0 | 30.0 | 90.0 | 🟢 Funcional |
-| 22 | DeepSeek V3.2 | 0.231 | 0.215 | 82.9 | 87.3 | 100.0 | 25.0 | 91.4 | 🟢 Funcional |
-| 23 | Qwen 3 Coder 480B | 0.237 | 0.206 | 74.3 | 94.7 | 100.0 | 27.5 | 82.8 | 🟢 Funcional |
-| 24 | Qwen 3 Next 80B Instruct | 0.240 | 0.215 | 88.6 | 79.7 | 100.0 | 25.0 | 86.9 | 🟢 Funcional |
+| 1 | Gemini 3.1 Pro Preview | **0.034** | 0.041 | 85.7 | 100.0 | 100.0 | 100.0 | 97.5 | 🟢 Functional |
+| 2 | Gemma 4 31B | **0.034** | 0.041 | 85.7 | 100.0 | 100.0 | 100.0 | 97.3 | 🟢 Functional |
+| 3 | Qwen 3 Next 80B Thinking | **0.036** | 0.049 | 85.7 | 100.0 | 100.0 | 100.0 | 96.1 | 🟢 Functional |
+| 4 | Claude Sonnet 4 | 0.047 | 0.058 | 85.7 | 92.3 | 100.0 | 100.0 | 98.4 | 🟢 Functional |
+| 5 | Gemma 4 26B A4B | 0.056 | 0.059 | 85.7 | 100.0 | 100.0 | 90.0 | 96.1 | 🟢 Functional |
+| 6 | gpt-oss-20b | 0.057 | 0.055 | 85.7 | 93.3 | 98.0 | 97.5 | 96.8 | 🟢 Functional |
+| 7 | Gemini 2.5 Pro | 0.066 | 0.065 | 74.3 | 96.7 | 100.0 | 100.0 | 96.0 | 🟢 Functional |
+| 8 | Claude Sonnet 4.6 | 0.066 | 0.081 | 85.7 | 85.7 | 100.0 | 100.0 | 95.6 | 🟢 Functional |
+| 9 | GLM-5 | 0.070 | 0.072 | 68.6 | 100.0 | 100.0 | 100.0 | 96.5 | 🟢 Functional |
+| 10 | Claude Opus 4.5 | 0.079 | 0.081 | 68.6 | 93.3 | 100.0 | 100.0 | 98.5 | 🟢 Functional |
+| 11 | Claude Sonnet 4.5 | 0.079 | 0.082 | 68.6 | 93.3 | 100.0 | 100.0 | 98.5 | 🟢 Functional |
+| 12 | Claude Opus 4.6 | 0.081 | 0.114 | 68.6 | 96.7 | 100.0 | 100.0 | 94.1 | 🟢 Functional |
+| 13 | GPT-5.4 | 0.092 | 0.087 | 88.6 | 86.7 | 90.0 | 92.5 | 96.4 | 🟢 Functional |
+| 14 | Gemini 2.5 Flash | 0.107 | 0.107 | 85.7 | 96.7 | 100.0 | 67.5 | 96.7 | 🟢 Functional |
+| 15 | Claude Opus 4.1 | 0.146 | 0.138 | 88.6 | 93.3 | 90.0 | 57.5 | 97.7 | 🟢 Functional |
+| 16 | Gemini 3.1 Flash-Lite Preview | 0.193 | 0.163 | 85.7 | 89.0 | 98.0 | 32.5 | 98.1 | 🟢 Functional |
+| 17 | gpt-5.4-mini-2026-03-17 | 0.200 | 0.182 | 100.0 | 81.3 | 100.0 | 30.0 | 88.8 | 🟢 Functional |
+| 18 | qwen3-235b-a22b-instruct-2507 | 0.200 | 0.188 | 85.7 | 91.3 | 100.0 | 32.5 | 90.3 | 🟢 Functional |
+| 19 | gemini-2.0-flash | 0.211 | 0.184 | 85.7 | 92.3 | 88.0 | 35.0 | 93.6 | 🟢 Functional |
+| 20 | Gemini 3 Flash Preview | 0.213 | 0.187 | 71.4 | 100.0 | 100.0 | 25.0 | 97.3 | 🟢 Functional |
+| 21 | Deepseek V3.1 | 0.225 | 0.199 | 77.1 | 90.7 | 100.0 | 30.0 | 90.0 | 🟢 Functional |
+| 22 | DeepSeek V3.2 | 0.231 | 0.215 | 82.9 | 87.3 | 100.0 | 25.0 | 91.4 | 🟢 Functional |
+| 23 | Qwen 3 Coder 480B | 0.237 | 0.206 | 74.3 | 94.7 | 100.0 | 27.5 | 82.8 | 🟢 Functional |
+| 24 | Qwen 3 Next 80B Instruct | 0.240 | 0.215 | 88.6 | 79.7 | 100.0 | 25.0 | 86.9 | 🟢 Functional |
 | 25 | gpt-oss-120b | 0.252 | 0.256 | 100.0 | 80.0 | 60.0 | 40.0 | 94.2 | 🟡 Borderline |
-| 26 | Gemini 2.0 Flash Lite | 0.272 | 0.238 | 88.6 | 83.7 | 100.0 | 0.0 | 91.8 | 🟢 Funcional |
-| 27 | Gemma 3 27B | 0.280 | 0.251 | 68.6 | 89.0 | 100.0 | 22.5 | 79.8 | 🟢 Funcional |
+| 26 | Gemini 2.0 Flash Lite | 0.272 | 0.238 | 88.6 | 83.7 | 100.0 | 0.0 | 91.8 | 🟢 Functional |
+| 27 | Gemma 3 27B | 0.280 | 0.251 | 68.6 | 89.0 | 100.0 | 22.5 | 79.8 | 🟢 Functional |
 | 28 | GPT-5.4 nano | 0.307 | 0.266 | 97.1 | 81.7 | 94.0 | 2.5 | 71.2 | 🟡 Borderline |
-| 29 | Gemma 3 12B | 0.320 | 0.283 | 74.3 | 81.3 | 100.0 | 7.5 | 76.9 | 🟢 Funcional |
-| 30 | Claude Haiku 4.5 | 0.340 | 0.298 | 68.6 | 97.0 | 100.0 | 0.0 | 64.2 | 🟢 Funcional |
+| 29 | Gemma 3 12B | 0.320 | 0.283 | 74.3 | 81.3 | 100.0 | 7.5 | 76.9 | 🟢 Functional |
+| 30 | Claude Haiku 4.5 | 0.340 | 0.298 | 68.6 | 97.0 | 100.0 | 0.0 | 64.2 | 🟢 Functional |
 | 31 | gemma-3-4b | 0.348 | 0.313 | 97.1 | 67.0 | 92.0 | 0.0 | 70.1 | 🟡 Borderline |
-| 32 | DeepSeek-R1 ⚠️ | 0.661 | 0.717 | 34.3 | 36.7 | 0.0 | 30.0 | 68.7 | 🔴 Deterioro Ejecutivo |
-| 33 | Gemma 3 1B | 0.707 | 0.611 | 14.3 | 40.7 | 36.0 | 0.0 | 55.4 | 🔴 Deterioro Ejecutivo |
+| 32 | DeepSeek-R1 ⚠️ | 0.661 | 0.717 | 34.3 | 36.7 | 0.0 | 30.0 | 68.7 | 🔴 Executive Impairment |
+| 33 | Gemma 3 1B | 0.707 | 0.611 | 14.3 | 40.7 | 36.0 | 0.0 | 55.4 | 🔴 Executive Impairment |
 
-> ⚠️ **DeepSeek-R1:** Los bloques `<think>...</think>` generados antes del output causaron falsos negativos en el parser de respuestas. Sus métricas están artificialmente infladas. Los valores reales serían menores en T1, T2 y T3.
-
----
-
-## 8. Hallazgos principales
-
-### 8.1 T5 es el principal discriminador del benchmark
-
-La Inteligencia Fluida (T5 / Trail Bench) es la tarea que más separa modelos. Los 6 modelos con mejor EPI-5 obtienen 0–0% de deterioro en T5. Desde el puesto 14 en adelante, T5 se convierte en el cuello de botella: Gemini 2.5 Flash (T5: 67.5%), Claude Opus 4.1 (T5: 57.5%), y 6 modelos en la mitad inferior del ranking obtienen 0% en T5.
-
-Esto sugiere que la carga de memoria de trabajo bajo secuencias alternantes es la dimensión ejecutiva más exigente para los LLMs actuales.
-
-### 8.2 La Frontera Dentada (Jagged Frontier)
-
-El rendimiento ejecutivo no es lineal ni homogéneo dentro de un mismo modelo. Ejemplos:
-
-- **gemma-3-4b**: T1=97.1% (excelente flexibilidad) pero T6=70.1% (doble tarea degradada)
-- **gpt-5.4-mini**: T1=100%, T3=100%, pero T5=30% (colapso en fluencia ejecutiva)
-- **Claude Haiku 4.5**: T2=97% (planificación casi perfecta), T5=0% (fallo total en trail)
-
-Esta disociación entre dimensiones es la característica más valiosa del benchmark: no existe un "modelo ejecutivamente fuerte en todo".
-
-### 8.3 Escala no predice ejecución
-
-El tamaño del modelo no garantiza desempeño ejecutivo superior:
-- **Gemma 4 31B** (EPI=0.034) supera a **Claude Opus 4.1** (EPI=0.146)
-- **Qwen 3 Coder 480B** (EPI=0.237) está por debajo de **GLM-5** (EPI=0.070)
-- **gemma-3-4b** supera en T1 a modelos 10× más grandes
-
-### 8.4 El artefacto DeepSeek-R1
-
-DeepSeek-R1 genera bloques `<think>...</think>` antes del output. Los parsers originales del benchmark no filtraban estos bloques, causando falsos negativos: respuestas correctas evaluadas como incorrectas. Esto infla artificialmente sus métricas de deterioro. Los parsers posteriores incorporaron filtrado de CoT (`re.sub(r'<think>.*?</think>', '', response, flags=re.DOTALL)`). Las métricas de DeepSeek-R1 en este leaderboard deben interpretarse con precaución.
+> ⚠️ **DeepSeek-R1:** `<think>...</think>` blocks generated before the output caused false negatives in the response parser. Its impairment metrics are artificially inflated. Actual values would be lower on T1, T2, and T3.
 
 ---
 
-## 9. Lo que ExProf-Bench mide y lo que no mide
+## 8. Main findings
 
-**Mide:**
-- Flexibilidad cognitiva ante cambio de reglas (T1)
-- Planificación con restricciones múltiples (T2)
-- Optimización de secuencias multi-tarea (T3)
-- Fluencia ejecutiva bajo carga secuencial (T5)
-- Mantenimiento de doble tarea sin degradación (T6)
+### 8.1 T5 is the primary discriminator
 
-**No mide:**
-- Inhibición tipo Stroop (incompatible con arquitectura de inferencia atómica)
-- Velocidad de procesamiento (latencia irrelevante en este contexto)
-- Precisión factual o conocimiento declarativo
-- Capacidad de razonamiento matemático puro
+Fluid intelligence (T5 / Trail Bench) is the task that most separates models. The top 6 models by EPI-5 show 0% impairment on T5. From rank 14 onward, T5 becomes the bottleneck: Gemini 2.5 Flash (T5: 67.5%), Claude Opus 4.1 (T5: 57.5%), and 6 models in the bottom half of the ranking score 0% on T5.
+
+This suggests that working-memory load under alternating sequences is the most demanding executive dimension for current LLMs.
+
+### 8.2 The Jagged Frontier
+
+Executive performance is neither linear nor homogeneous within a single model. Examples:
+
+- **gemma-3-4b**: T1 = 97.1% (excellent flexibility) but T6 = 70.1% (dual-task degraded)
+- **gpt-5.4-mini**: T1 = 100%, T3 = 100%, but T5 = 30% (executive fluency collapse)
+- **Claude Haiku 4.5**: T2 = 97% (near-perfect planning), T5 = 0% (total trail failure)
+
+This cross-dimension dissociation is the benchmark's most valuable characteristic: there is no "executively strong in everything" model.
+
+### 8.3 Scale does not predict execution
+
+Model size does not guarantee superior executive performance:
+- **Gemma 4 31B** (EPI = 0.034) outperforms **Claude Opus 4.1** (EPI = 0.146)
+- **Qwen 3 Coder 480B** (EPI = 0.237) ranks below **GLM-5** (EPI = 0.070)
+- **gemma-3-4b** outperforms models 10× larger on T1
+
+### 8.4 The DeepSeek-R1 artifact
+
+DeepSeek-R1 generates `<think>...</think>` blocks before its output. The original benchmark parsers did not filter these blocks, causing false negatives: correct answers scored as incorrect. This artificially inflates its impairment metrics. Later parsers incorporated CoT filtering (`re.sub(r'<think>.*?</think>', '', response, flags=re.DOTALL)`). DeepSeek-R1 metrics in this leaderboard should be interpreted with caution.
 
 ---
 
-## 10. Notas sobre la referencia normativa
+## 9. What ExProf-Bench measures and what it does not
 
-Los umbrales BRIEF-2A se usan como escala de referencia externa, no como diagnóstico. Que un modelo quede en "Desempeño Limitado" significa que su rendimiento en estas tareas es equivalente, numéricamente, al del cuartil inferior de la muestra normativa humana (n=1,637 adultos) en estas dimensiones de control ejecutivo. No implica ninguna atribución sobre la naturaleza del modelo ni una comparación de tipo médico.
+**Measures:**
+- Cognitive flexibility under rule change (T1)
+- Planning under multiple simultaneous constraints (T2)
+- Multi-task sequence optimization (T3)
+- Executive fluency under sequential load (T5)
+- Dual-task maintenance without degradation (T6)
 
-El valor de la referencia es metodológico: permite situar el rendimiento de un modelo dentro de un continuo calibrado con evidencia poblacional real, en lugar de comparar solo modelos entre sí sin anclaje externo. Un modelo que obtiene EPI > 0.40 simplemente falla en estas tareas con una frecuencia que, aplicada a un humano, estaría por debajo del rango normativo esperado para adultos. El modelo no "tiene" ninguna condición — produce outputs que, en estas dimensiones, caen fuera del rango de referencia.
+**Does not measure:**
+- Stroop-type inhibition (incompatible with atomic inference architecture)
+- Processing speed (latency irrelevant in this context)
+- Factual accuracy or declarative knowledge
+- Pure mathematical reasoning ability
 
 ---
 
+## 10. Notes on the normative reference
+
+BRIEF-2A thresholds are used as an external reference scale, not as a diagnosis. A model landing in "Executive Impairment" means its performance on these tasks is numerically equivalent to that of the bottom quartile of the human normative sample (n = 1,637 adults) on these executive-control dimensions. It does not imply any attribution about the model's nature nor a medical comparison.
+
+The value of the reference is methodological: it places model performance within a continuum calibrated against real population evidence, rather than comparing models only against each other without external anchor. A model scoring EPI > 0.40 simply fails these tasks at a rate that, applied to a human, would fall below the expected normative range for adults. The model does not "have" any condition — it produces outputs that, on these dimensions, fall outside the reference range.
+
 ---
 
-## 11. Referencias
+## 11. References
 
 - Wilson, B.A. et al. (1996). *Behavioural Assessment of the Dysexecutive Syndrome (BADS)*. Thames Valley Test Company.
 - Gioia, G.A. et al. *Behavior Rating Inventory of Executive Function, Adult Version (BRIEF-2A)*. Psychological Assessment Resources.
@@ -292,7 +290,8 @@ El valor de la referencia es metodológico: permite situar el rendimiento de un 
 - Cognitive Control in Vision-Language Models (arXiv, 2025). https://arxiv.org/html/2505.18969v1
 - Triangulating LLM Progress — Findings EMNLP 2025. https://aclanthology.org/2025.findings-emnlp.1092.pdf
 - Deficient Executive Control in Transformer Attention (bioRxiv, 2025). https://www.biorxiv.org/content/10.1101/2025.01.22.634394v2.full.pdf
+
 ---
 
-*ExProf-Bench v1.0 — Gerlyn Eduardo Duarte*  
-*Calibrado con: BADS (Wilson et al., 1996) · BRIEF-2A normativa adultos n=1,637 (Gioia et al.) · CANTAB SWM (Owen et al., 1990)*
+*ExProf-Bench v1.0 — Gerlyn Eduardo Duarte*
+*Calibrated with: BADS (Wilson et al., 1996) · BRIEF-2A adult norms n = 1,637 (Gioia et al.) · CANTAB SWM (Owen et al., 1990)*

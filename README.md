@@ -12,6 +12,11 @@ The central empirical result is a **jagged frontier**: larger models do not reli
 
 ---
 
+> **Full methodological walkthrough** — task design, T4 exclusion argument, EPI-5 formula, complete 33-model leaderboard with tier classification, and key findings:
+> ### → [EXPROF_WALKTHROUGH.md](notebooks/Resultados%20completos/EXPROF_WALKTHROUGH.md)
+
+---
+
 ## EPI-5 leaderboard (33 models)
 
 ![Model leaderboard: Mean executive control — EPI-5 dot plot](Imagenes/v3/Liderboard.png)
