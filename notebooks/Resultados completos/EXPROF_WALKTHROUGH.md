@@ -174,15 +174,15 @@ Each component is the impairment index for that task: `0 = optimal, 1 = total fa
 
 Standard deviation increased 7%. The improvement is not dramatic because T1–T3, T5, and T6 always discriminated correctly — the problem was specifically T4, which added random noise. EPI-5 is cleaner, not radically different in dispersion.
 
-A real effect is visible in the **distribution**: 4 models that appeared in **Functional** under EPI-6 moved to **Borderline** under EPI-5. This reflects that T4 — converging at ~50% by chance — was artificially inflating the pass rate of models with low performance on other tasks.
+A real effect is visible in the **distribution**: **3 models that appeared in Functional under EPI-6 moved to Borderline under EPI-5** — GPT-5.4 nano (0.734→0.693), Gemma 3 12B (0.717→0.680), and Claude Haiku 4.5 (0.702→0.660). In all three cases, T4 — converging at ~100% by chance for these models — was artificially inflating their pass rate and masking genuine weakness on T5 and T6. Removing T4 correctly reclassifies them.
 
 ---
 
 ## 7. Full leaderboard — 33 models
 
 **Classification by EPI-5 pass rate (mean T1–T3, T5, T6):**
-- 🟢 **Functional** — pass rate ≥ 0.70 (28 models)
-- 🟡 **Borderline** — pass rate 0.40–0.70 (3 models)
+- 🟢 **Functional** — pass rate ≥ 0.70 (27 models)
+- 🟡 **Borderline** — pass rate 0.40–0.70 (4 models)
 - 🔴 **Executive Impairment** — pass rate < 0.40 (2 models)
 
 | # | Model | EPI-5 | EPI-6 ref | T1 | T2 | T3 | T5 | T6 | Tier |
@@ -211,12 +211,12 @@ A real effect is visible in the **distribution**: 4 models that appeared in **Fu
 | 22 | DeepSeek V3.2 | 0.231 | 0.215 | 82.9 | 87.3 | 100.0 | 25.0 | 91.4 | 🟢 Functional |
 | 23 | Qwen 3 Coder 480B | 0.237 | 0.206 | 74.3 | 94.7 | 100.0 | 27.5 | 82.8 | 🟢 Functional |
 | 24 | Qwen 3 Next 80B Instruct | 0.240 | 0.215 | 88.6 | 79.7 | 100.0 | 25.0 | 86.9 | 🟢 Functional |
-| 25 | gpt-oss-120b | 0.252 | 0.256 | 100.0 | 80.0 | 60.0 | 40.0 | 94.2 | 🟡 Borderline |
+| 25 | gpt-oss-120b | 0.252 | 0.256 | 100.0 | 80.0 | 60.0 | 40.0 | 94.2 | 🟢 Functional |
 | 26 | Gemini 2.0 Flash Lite | 0.272 | 0.238 | 88.6 | 83.7 | 100.0 | 0.0 | 91.8 | 🟢 Functional |
 | 27 | Gemma 3 27B | 0.280 | 0.251 | 68.6 | 89.0 | 100.0 | 22.5 | 79.8 | 🟢 Functional |
 | 28 | GPT-5.4 nano | 0.307 | 0.266 | 97.1 | 81.7 | 94.0 | 2.5 | 71.2 | 🟡 Borderline |
-| 29 | Gemma 3 12B | 0.320 | 0.283 | 74.3 | 81.3 | 100.0 | 7.5 | 76.9 | 🟢 Functional |
-| 30 | Claude Haiku 4.5 | 0.340 | 0.298 | 68.6 | 97.0 | 100.0 | 0.0 | 64.2 | 🟢 Functional |
+| 29 | Gemma 3 12B | 0.320 | 0.283 | 74.3 | 81.3 | 100.0 | 7.5 | 76.9 | 🟡 Borderline |
+| 30 | Claude Haiku 4.5 | 0.340 | 0.298 | 68.6 | 97.0 | 100.0 | 0.0 | 64.2 | 🟡 Borderline |
 | 31 | gemma-3-4b | 0.348 | 0.313 | 97.1 | 67.0 | 92.0 | 0.0 | 70.1 | 🟡 Borderline |
 | 32 | DeepSeek-R1 ⚠️ | 0.661 | 0.717 | 34.3 | 36.7 | 0.0 | 30.0 | 68.7 | 🔴 Executive Impairment |
 | 33 | Gemma 3 1B | 0.707 | 0.611 | 14.3 | 40.7 | 36.0 | 0.0 | 55.4 | 🔴 Executive Impairment |

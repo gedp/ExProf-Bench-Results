@@ -190,7 +190,19 @@ Each EPI-5 task occupies a different position on the sensitivity/difficulty trad
 
 > Histogram of the T5 gap (global mean − T5 score) across all 33 models. A bimodal distribution emerges: **~11 models have no meaningful T5 gap** (they perform consistently across all tasks), while **~22 models show a positive gap**, meaning T5 fails them specifically — they look capable globally but collapse on alternation flexibility. This is direct evidence that T5 measures a specific executive capacity, not general model quality.
 
-### 7. Stability: high mean alone is not enough
+### 7. T4 exclusion has real classification consequences
+
+Removing T4 from the global metric is not merely methodological — it **changed the tier classification of 3 models**:
+
+| Model | EPI-6 pass rate | EPI-5 pass rate | Tier change |
+|---|---:|---:|---|
+| GPT-5.4 nano | 0.734 | 0.693 | 🟢 Functional → 🟡 Borderline |
+| Gemma 3 12B | 0.717 | 0.680 | 🟢 Functional → 🟡 Borderline |
+| Claude Haiku 4.5 | 0.702 | 0.660 | 🟢 Functional → 🟡 Borderline |
+
+In all three cases, T4 was scoring at or near ceiling (100%) by chance — artificially boosting the global average and masking genuine T5 and T6 deficits. EPI-5 strips that noise and produces the correct classification. The final tier distribution is **27 Functional · 4 Borderline · 2 Executive Impairment**.
+
+### 8. Stability: high mean alone is not enough
 
 Frontier models (GLM-5, Claude-Sonnet-4.5, Qwen3-80B-Thinking) show both high EPI-5 means **and** low across-task standard deviation — stable executive capability across all five dimensions. The bottom outliers (DeepSeek-R1, Gemma-3-1B) have high variance despite low means: their failures are inconsistent, not uniformly weak, which is a distinct profile from models that fail everything uniformly.
 
@@ -239,9 +251,9 @@ A 6× larger model scores 55 points lower on the task that matters most. This di
 
 ## Full leaderboard
 
-EPI-5 = mean pass rate of T1, T2, T3, T5, T6. T4 shown as reference only — excluded from EPI-5 (see §T4 exclusion).
+**EPI-5 pass rate** = mean(T1, T2, T3, T5, T6) — higher is better. The formula-based **EPI-5 impairment index** (lower = better, see §EPI-5 above) is the inverse: EPI-5 impairment ≈ 1 − pass rate. T4 shown as reference only.
 
-| Model | EPI-5 | T1 | T2 | T3 | T4 † | T5 | T6 |
+| Model | EPI-5 pass rate | T1 | T2 | T3 | T4 † | T5 | T6 |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | Gemini-3.1-Pro | **0.971** | 0.857 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
 | Gemma-4-31B | **0.971** | 0.857 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 |
@@ -290,7 +302,13 @@ ExProf-Bench-Results/
 │   ├── evaluator_t5_trailbench.py
 │   └── evaluator_t6_memesp.py
 └── notebooks/
-    ├── Colab-ExPro_Bench_Analisys.ipynb
+    ├── examples/
+    │   └── Claude-Sonnet-4/                   ← Example model outputs per task
+    │       ├── exprof-bench-t1.ipynb          ← T1 RuleShift responses
+    │       ├── exprof-bench-t2.ipynb          ← T2 ZooMap responses
+    │       ├── exprof-bench-t3.ipynb          ← T3 SixElements responses
+    │       ├── exprof-bench-t5.ipynb          ← T5 TrailBench responses
+    │       └── exprof-bench-t6-v1.ipynb       ← T6 MemEsp responses
     └── Resultados completos/
         ├── gedpve_test-gedp_leaderboard.csv   ← Full 33-model raw scores
         └── EXPROF_WALKTHROUGH.md              ← Full methodological walkthrough
