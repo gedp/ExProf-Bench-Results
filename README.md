@@ -140,6 +140,14 @@ $$\text{EPI-5} = \frac{\text{TEI} + \text{PV} + (1-\text{TSO}) + \text{TVR} + \f
 **EPI-5 = 1** → complete failure on every dimension.  
 **BRIEF-2A reference:** healthy adults EPI < 0.20 (n = 1,637). Values above 0.40 fall in the mild executive dysfunction range as an orienting reference, not a diagnostic claim.
 
+### Why EPI-5 over a simple pass rate
+
+A mean pass rate tells you a model scored 0.66. That number doesn't tell you anything about *what* failed. Two models can have the same pass rate with completely opposite profiles: one fails on planning (T2) while the other fails on alternation flexibility (T5). They look identical in a ranking — but they break for different reasons, and fixing one does nothing for the other.
+
+EPI-5 preserves that distinction. Each component maps to a specific executive mechanism with a named clinical analogue. When a model lands at EPI-5 = 0.34, you can read the profile: T5 collapsed (TVR high), T2 held (PV low), T3 intact. That's a diagnosis, not just a score.
+
+The second advantage is external grounding. Most benchmarks compare models against each other — the "best" model is best relative to the field, with no external reference. EPI-5 anchors performance against BRIEF-2A norms (n = 1,637 adults), which means a score translates to something interpretable: Functional, Borderline, or Executive Impairment relative to human data. This is what allowed the tier reclassification when T4 was removed — three models that looked Functional by global average turned out Borderline once the noise from T4 was stripped. A pass rate average would have missed that.
+
 ---
 
 ## Main empirical findings
