@@ -1,4 +1,4 @@
-# ExProf-Bench — Methodological Walkthrough
+# ExProf-Bench — Methodological walkthrough
 
 > **ExProf-Bench v1.0** — Executive-function benchmark for large language models (LLMs).
 > Evaluates not general accuracy, but the integrity of executive processes under high cognitive demand.
