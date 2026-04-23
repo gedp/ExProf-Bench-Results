@@ -1,6 +1,6 @@
 # ExProf-Bench: Systematic Assessment of Executive Control in LLMs
 
-**Track:** Executive Functions &nbsp;|&nbsp; **Hackathon:** Measuring Progress Toward AGI (Kaggle × Google DeepMind 2026)
+**Track:** Executive Functions &nbsp;|&nbsp; **Hackathon:** Measuring Progress Toward AGI (Kaggle × Google DeepMind 2026) &nbsp;|&nbsp; [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 `6 tasks evaluated` &nbsp;·&nbsp; `5 in EPI-5 (T4 excluded)` &nbsp;·&nbsp; `150 items` &nbsp;·&nbsp; `100% deterministic Python evaluators` &nbsp;·&nbsp; `No LLM judge` &nbsp;·&nbsp; `33 models evaluated`
 
@@ -358,6 +358,15 @@ At the task level, ExProf-Bench uses a **0.70 pass threshold**: a model passes a
 - Song, P. et al. (2024). In-Context Learning May Not Elicit Trustworthy Reasoning: A-Not-B Errors in Pretrained Language Models. *EMNLP Findings.*
 - Upadhayay, B. et al. (2025). Working Memory Attack on LLMs. *ICLR 2025.*
 - LeCun, Y. (2022). A Path Toward Autonomous Machine Intelligence.
+
+---
+
+---
+
+## License
+
+This project is released under the [MIT License](LICENSE).  
+Copyright © 2026 Gerlyn Eduardo Duarte.
 
 ---
 
